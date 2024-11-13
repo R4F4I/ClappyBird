@@ -78,14 +78,14 @@ void checkCollision();     // Detect bird-pipe interactions
 - Time-based updates
 
 ### 📊 Performance Considerations
--Efficient screen clearing
--Minimal computational overhead
--Smooth frame updates
+- Efficient screen clearing
+- Minimal computational overhead
+- Smooth frame updates
 
 ### 🚀 Potential Enhancements
--Score tracking
--Difficulty progression
--Multiple bird/pipe skins
+- Score tracking
+- Difficulty progression
+- Multiple bird/pipe skins
 
 
 ### 🛡️ Error Handling
