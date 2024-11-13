@@ -55,7 +55,7 @@ graph TD
     D -->|Q Key| F[Quit Game]
     E --> G[Bird Descends]
     G --> H[Spawn Pipes]
-    H --> I{Pipe collides with Bird}
+    H --> I{Pipe with Bird}
     I -->|Collision| J[Game Over]
     I -->|No Collision| D
 ```
