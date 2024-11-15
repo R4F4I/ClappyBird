@@ -40,6 +40,7 @@ The game needs to be in real-time, fgets() is not a good choice
 # define HEIGHT 16
 # define WIDTH 32
 # define NoOfPipes 3 // the amount of pipes visible in an instances
+# define DIST 12     // distance btween two pipes
 
 // center of mass of components
 typedef struct {
@@ -99,7 +100,13 @@ void print_screen(){
 }
 
 void draw_pipes(){
-
+    int i,j;
+    // 3 pipes, using their coordintes, draw them
+    for(i=0;i<NoOfPipes;i++){
+        if(){            
+            screen[WIDTH];
+        }
+    }
 }
 
 void draw(){
@@ -123,7 +130,7 @@ int collision(){
 
     for (size_t i = 0; i < NoOfPipes; i++)
     {
-        
+        // the coordinate of a pipe defines the pathway between two pipes, hence the player MUST match it's coordinate
         if (bird.x == pipes[i].x && bird.y != pipes[i].y){
             return 1;
         } else{
@@ -171,7 +178,8 @@ void main(){
     {
         draw();
 
-        printf("\nEnter you move:  ");
+        // the method of scanf for input is intrusive,                          // https://cboard.cprogramming.com/cplusplus-programming/112970-getasynckeystate-key-pressed.html
+        printf("\nEnter you move:  ");                                          // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate
         scanf("%c",&move);
         getchar();
 
