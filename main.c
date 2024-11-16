@@ -38,22 +38,40 @@ The game needs to be in real-time, fgets() is not a good choice
 */
 
 # define HEIGHT 16
-# define WIDTH 32
+# define WIDTH 64
 # define NoOfPipes 3 // the amount of pipes visible in an instances
-# define DIST 12     // distance btween two pipes
+# define DIST 18     // distance btween two pipes
+
+#define GREEN       "\33[32m"                        // ANSI code for green output
+#define YELLOW      "\33[33m"                        // ANSI code for yellow output
+#define WHITE       "\33[0m"                         // ANSI code for uncolored output
+
+#define Q        0x51
+#define W        0x57
 
 // center of mass of components
 typedef struct {
     int x;
     int y;
 
-} coord;
+} entity;
 
 // global variables
-coord bird;
-coord pipes[NoOfPipes];
+entity bird;
+entity pipes[3];
 char screen[HEIGHT][WIDTH];
 
+void initializePipes(){
+    //assume these coordinates of pipes
+    pipes[0].x = DIST;
+    pipes[1].x = DIST + pipes[0].x;
+    pipes[2].x = DIST + pipes[1].x;
+
+    //the heights are meant to be random
+    pipes[0].y = (rand()%7) +5;     // random height between 5 and 11
+    pipes[1].y = (rand()%7) +5;     // random height between 5 and 11
+    pipes[2].y = (rand()%7) +5;     // random height between 5 and 11
+}
 
 void draw_border() {
     int i, j;
@@ -93,44 +111,52 @@ void print_screen(){
     int y,x;
     for (y = 0; y < HEIGHT; y++) {
         for (x = 0; x < WIDTH; x++) {
-            printf("%c", screen[y][x]);
+            if (screen[y][x] == '@')
+            {
+                printf("%s%c", YELLOW,screen[y][x]);
+            } else if (screen[y][x] == '|' || screen[y][x] == '-')
+            {
+                printf("%s%c", GREEN,screen[y][x]);
+            } else
+            {
+                printf("%s%c",WHITE,screen[y][x]);
+            }
         }
         printf("\n");
     }
+    printf("\33[16A"); // moves the cursor 16 lines up
+    
 }
 
 void draw_pipes(){
     int i,j;
-    // 3 pipes, using their coordintes, draw them
+    // 3 pipes, using their coordinates, draw them
     for(i=0;i<NoOfPipes;i++){
-        if(){            
-            screen[WIDTH];
+        for (j = 1; j < HEIGHT-1; j++)
+        {
+            if (j != pipes[i].y)
+            {
+                screen[j][pipes[i].x] = '|';
+            }
+        // TODO add '_' to the aperture
         }
+        
     }
 }
 
 void draw(){
     // draw border in rectangle
     draw_border();
-    
-    //TODO: draw bird
-
     draw_bird();
-
-
-    //TODO: draw pipes
-
     draw_pipes();
-    
-    
     print_screen();
 }
 
 int collision(){
-
-    for (size_t i = 0; i < NoOfPipes; i++)
+    int i;
+    for (i = 0; i < NoOfPipes; i++)
     {
-        // the coordinate of a pipe defines the pathway between two pipes, hence the player MUST match it's coordinate
+        // the coordinate of a pipe defines the pathway between two pipes, aka aperture, hence the player MUST match it's coordinate
         if (bird.x == pipes[i].x && bird.y != pipes[i].y){
             return 1;
         } else{
@@ -139,8 +165,8 @@ int collision(){
     }
 }
 
-int quit(char move){
-    if (move == 'q')
+int quit(){
+    if (GetAsyncKeyState(Q))
     {
         return 1;
     }
@@ -159,7 +185,9 @@ void main(){
     int i,j,frame = 0;
     char move;
     
+    initializePipes();
 
+    srand(time(NULL));
 
 
 
@@ -174,28 +202,27 @@ void main(){
 
 
     */
-    while (!collision() && !quit(move)) // keep running if no collision and no quit
+    while (!collision() && !quit()) // keep running if no collision and no quit
     {
         draw();
 
         // the method of scanf for input is intrusive,                          // https://cboard.cprogramming.com/cplusplus-programming/112970-getasynckeystate-key-pressed.html
-        printf("\nEnter you move:  ");                                          // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate
-        scanf("%c",&move);
-        getchar();
+        //printf("\nEnter you move:  ");                                          // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate
+        //scanf("%c",&move);
+        //getchar();
 
-        if (move == 'w')
+        if (GetAsyncKeyState(W))
         {
             bird.y -= 2; //  move bird up
 
-            for (i = 0; i < NoOfPipes; i++)
-            {
-                pipes[i].x--; // move the 3 pipes closer
-            }
+            bird.y += 4; //  move bird down
             
+        for (i = 0; i < NoOfPipes; i++)
+        {
+            pipes[i].x--; // move the 3 pipes closer
+        }
 
         }
-        
-
-
+        Sleep(100);
     }
 }
