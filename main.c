@@ -37,18 +37,18 @@ The game needs to be in real-time, fgets() is not a good choice
 
 */
 
-# define HEIGHT 16
-# define WIDTH 64
-# define NoOfPipes 3        // the amount of pipes visible in an instances
-# define DIST 25            // distance between two pipes
-# define APERTURE 1            // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
+# define HEIGHT             16
+# define WIDTH              64
+# define NoOfPipes          3               // the amount of pipes visible in an instances
+# define DIST               25              // distance between two pipes
+# define APERTURE           2               // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
 
-# define GREEN       "\33[32m"                        // ANSI code for green output
-# define YELLOW      "\33[33m"                        // ANSI code for yellow output
-# define WHITE       "\33[0m"                         // ANSI code for uncolored output
+# define WHITE              "\33[0m"        // ANSI code for white output
+# define GREEN              "\33[32m"       // ANSI code for green output
+# define YELLOW             "\33[33m"       // ANSI code for yellow output
 
-# define Q        0x51                                // ANSI code for 'q' key
-# define W        0x57                                // ANSI code for 'w' key
+# define Q                  0x51            // ANSI code for 'q' key
+# define W                  0x57            // ANSI code for 'w' key
 
 // center of mass of components
 typedef struct {
@@ -61,6 +61,15 @@ typedef struct {
 entity bird;
 entity pipes[3];
 char screen[HEIGHT][WIDTH];
+
+void hide_cursor() {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(hConsole, &cursorInfo);
+    cursorInfo.bVisible = FALSE; // Set the cursor visibility to false
+    SetConsoleCursorInfo(hConsole, &cursorInfo);
+}
+
 
 void draw_border() {
     int i, j;
@@ -113,27 +122,24 @@ void print_screen(){
         }
         printf("\n");
     }
-    printf("\33[16A"); // moves the cursor 16 lines up
+    printf("\33[%sA",HEIGHT); // moves the cursor 16 lines up
     
 }
 
 void draw_pipes(){
-    int i,j;
+    int i,j,k;
     // 3 pipes, using their coordinates, draw them, only draw them if they are inside the WIDTH
     for(i=0;i<NoOfPipes;i++){
         if (pipes[i].x< WIDTH){
             for (j = 1; j < HEIGHT-1; j++)
             {
-                if (
-                    j != pipes[i].y+APERTURE || 
-                    j != pipes[i].y-APERTURE || 
-                    j != pipes[i].y 
-                )
-                {
-                    screen[j][pipes[i].x] = '|';
-                }
-
-                // TODO add '-' to the aperture
+                if  (
+                        j < pipes[i].y - APERTURE ||
+                        j > pipes[i].y + APERTURE //&& j != pipes[i].y 
+                    )
+                    {
+                        screen[j][pipes[i].x] = '|';
+                    }
                 if (
                     j == pipes[i].y+1+APERTURE ||
                     j == pipes[i].y-1-APERTURE  
@@ -179,9 +185,11 @@ int quit(){
 
 void main(){
     
+    hide_cursor();
+
     bird.x = 4;
     bird.y = 4;
-    int i,j,frame = 0;
+    int i,j; 
     
 
     srand(time(NULL));
@@ -192,9 +200,10 @@ void main(){
     pipes[2].x = DIST + pipes[1].x;
 
     //the heights are meant to be random
-    pipes[0].y = (rand()%7) +5;     // random height between 5 and 11
-    pipes[1].y = (rand()%7) +5;     // random height between 5 and 11
-    pipes[2].y = (rand()%7) +5;     // random height between 5 and 11
+    for (i = 0; i < NoOfPipes; i++)
+    {
+        pipes[i].y = (rand()%7) +5;     // random height between 5 and 11
+    }
 
 
 
@@ -227,6 +236,7 @@ void main(){
         printf("\n");
     }
     
+    time_t start = time(NULL);
 
     while (!collision() && !quit()) // keep running if no collision and no quit
     {
@@ -237,7 +247,7 @@ void main(){
         //scanf("%c",&move);
         //getchar();
 
-        if (GetAsyncKeyState(W))
+        if (GetAsyncKeyState(W)&& bird.y<HEIGHT)
         {
             bird.y -= 2; //  move bird up
         }
@@ -246,14 +256,20 @@ void main(){
         {
             pipes[i].x--; // move the 3 pipes closer
             
-            if (pipes[i].x == 3) // to circle the pipe back to the start
+            if (pipes[i].x == 2) // to circle the pipe back to the start
             {
                 pipes[i].x = WIDTH + DIST;
+
+                // change the leaving pipe's height
+                pipes[i].y = (rand()%7) +5;     // random height between 5 and 11
             }
             
         }
 
         bird.y++; //  move bird down by 1 unit, will happen regardless
-        Sleep(100);
+        Sleep(80); // millisecond delay
     }
+    time_t end = time(NULL);
+
+    printf("\n\n\n %s SECONDS SURVIVED: %d\n",YELLOW,(int)(end - start));
 }
