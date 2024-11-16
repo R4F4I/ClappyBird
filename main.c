@@ -39,15 +39,16 @@ The game needs to be in real-time, fgets() is not a good choice
 
 # define HEIGHT 16
 # define WIDTH 64
-# define NoOfPipes 3 // the amount of pipes visible in an instances
-# define DIST 18     // distance btween two pipes
+# define NoOfPipes 3        // the amount of pipes visible in an instances
+# define DIST 25            // distance between two pipes
+# define APERTURE 1            // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
 
-#define GREEN       "\33[32m"                        // ANSI code for green output
-#define YELLOW      "\33[33m"                        // ANSI code for yellow output
-#define WHITE       "\33[0m"                         // ANSI code for uncolored output
+# define GREEN       "\33[32m"                        // ANSI code for green output
+# define YELLOW      "\33[33m"                        // ANSI code for yellow output
+# define WHITE       "\33[0m"                         // ANSI code for uncolored output
 
-#define Q        0x51
-#define W        0x57
+# define Q        0x51                                // ANSI code for 'q' key
+# define W        0x57                                // ANSI code for 'w' key
 
 // center of mass of components
 typedef struct {
@@ -60,18 +61,6 @@ typedef struct {
 entity bird;
 entity pipes[3];
 char screen[HEIGHT][WIDTH];
-
-void initializePipes(){
-    //assume these coordinates of pipes
-    pipes[0].x = DIST;
-    pipes[1].x = DIST + pipes[0].x;
-    pipes[2].x = DIST + pipes[1].x;
-
-    //the heights are meant to be random
-    pipes[0].y = (rand()%7) +5;     // random height between 5 and 11
-    pipes[1].y = (rand()%7) +5;     // random height between 5 and 11
-    pipes[2].y = (rand()%7) +5;     // random height between 5 and 11
-}
 
 void draw_border() {
     int i, j;
@@ -114,7 +103,7 @@ void print_screen(){
             if (screen[y][x] == '@')
             {
                 printf("%s%c", YELLOW,screen[y][x]);
-            } else if (screen[y][x] == '|' || screen[y][x] == '-')
+            } else if (screen[y][x] == '|' || screen[y][x] == '-') 
             {
                 printf("%s%c", GREEN,screen[y][x]);
             } else
@@ -130,17 +119,32 @@ void print_screen(){
 
 void draw_pipes(){
     int i,j;
-    // 3 pipes, using their coordinates, draw them
+    // 3 pipes, using their coordinates, draw them, only draw them if they are inside the WIDTH
     for(i=0;i<NoOfPipes;i++){
-        for (j = 1; j < HEIGHT-1; j++)
-        {
-            if (j != pipes[i].y)
+        if (pipes[i].x< WIDTH){
+            for (j = 1; j < HEIGHT-1; j++)
             {
-                screen[j][pipes[i].x] = '|';
+                if (
+                    j != pipes[i].y+APERTURE || 
+                    j != pipes[i].y-APERTURE || 
+                    j != pipes[i].y 
+                )
+                {
+                    screen[j][pipes[i].x] = '|';
+                }
+
+                // TODO add '-' to the aperture
+                if (
+                    j == pipes[i].y+1+APERTURE ||
+                    j == pipes[i].y-1-APERTURE  
+                )
+                {
+                    screen[j][pipes[i].x] = '-';
+                    screen[j][pipes[i].x-1] = '-';
+                    screen[j][pipes[i].x+1] = '-';
+                }
             }
-        // TODO add '_' to the aperture
         }
-        
     }
 }
 
@@ -157,25 +161,20 @@ int collision(){
     for (i = 0; i < NoOfPipes; i++)
     {
         // the coordinate of a pipe defines the pathway between two pipes, aka aperture, hence the player MUST match it's coordinate
-        if (bird.x == pipes[i].x && bird.y != pipes[i].y){
+        if (
+            bird.x == pipes[i].x          && 
+            bird.y != pipes[i].y+APERTURE && 
+            bird.y != pipes[i].y-APERTURE
+        ){
             return 1;
-        } else{
-            return 0;
-        }
+        } 
+        
+    return 0;
     }
 }
 
 int quit(){
-    if (GetAsyncKeyState(Q))
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-    
-    
+    return GetAsyncKeyState(Q) ? 1 : 0;
 }
 
 void main(){
@@ -183,11 +182,20 @@ void main(){
     bird.x = 4;
     bird.y = 4;
     int i,j,frame = 0;
-    char move;
     
-    initializePipes();
 
     srand(time(NULL));
+    //   initialise pipes
+    //   assume these coordinates of pipes
+    pipes[0].x = DIST;
+    pipes[1].x = DIST + pipes[0].x;
+    pipes[2].x = DIST + pipes[1].x;
+
+    //the heights are meant to be random
+    pipes[0].y = (rand()%7) +5;     // random height between 5 and 11
+    pipes[1].y = (rand()%7) +5;     // random height between 5 and 11
+    pipes[2].y = (rand()%7) +5;     // random height between 5 and 11
+
 
 
 
@@ -197,11 +205,29 @@ void main(){
         0     0       1        0      1         1
         0     1       0        1      0         0
         1     0       0        1      0         0
-        1     1      1/0       0      1         0
+   //   1     1      1/0       0      1         0
 
 
 
     */
+
+   /*
+   events:
+   1. bird descends 
+   2. pipes approach
+   3. pressing 'W' ascends the bird
+   4. bird colliding with pipes OR with the ground ends the game
+   5. colliding with ceiling negates the change in altitude
+
+
+   */
+
+    for (size_t i = 0; i < HEIGHT; i++)
+    {
+        printf("\n");
+    }
+    
+
     while (!collision() && !quit()) // keep running if no collision and no quit
     {
         draw();
@@ -214,15 +240,20 @@ void main(){
         if (GetAsyncKeyState(W))
         {
             bird.y -= 2; //  move bird up
+        }
 
-            bird.y += 4; //  move bird down
-            
         for (i = 0; i < NoOfPipes; i++)
         {
             pipes[i].x--; // move the 3 pipes closer
+            
+            if (pipes[i].x == 3) // to circle the pipe back to the start
+            {
+                pipes[i].x = WIDTH + DIST;
+            }
+            
         }
 
-        }
+        bird.y++; //  move bird down by 1 unit, will happen regardless
         Sleep(100);
     }
 }
