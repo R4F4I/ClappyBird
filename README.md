@@ -13,6 +13,9 @@
 ## 📖 Overview
 ClappyBird is a terminal-based game inspired by the classic Flappy Bird, implemented in C. The player controls a bird that must navigate through pipes by jumping at the right moments while avoiding collisions.
 
+## ⏳ Compiling
+- to run the code, compile using `gcc .\main.c -o .\main.exe`
+
 ## 🎮 Game Mechanics and Functionality
 
 ### 🕹️ Controls
@@ -42,7 +45,7 @@ ClappyBird is a terminal-based game inspired by the classic Flappy Bird, impleme
   3. Down Pipe
 
 - **Behavior**:
-  - Pipes spawn randomly within the game frame and move towards the bird.
+  - Pipes spawn randomly within the game and move towards the bird.
   - Collision rules:
     - If the pipe type matches the bird's position, the game continues.
     - If there’s a mismatch, the game ends.
@@ -56,8 +59,8 @@ graph TD
     A[Game Start] --> B[Initialize Game]
     B --> C[Spawn Bird]
     C --> D{User  Input}
-    D -->|UP Arrow| E[Bird Jumps]
-    D -->|Q Key| F[Quit Game]
+    D -->|W Key| E[Bird Jumps]
+    D -->|Q Key| J
     E --> G[Bird Descends]
     G --> H[Spawn Pipes]
     H --> I{Pipe with Bird}
