@@ -122,7 +122,7 @@ void print_screen(){
         }
         printf("\n");
     }
-    printf("\33[%sA",HEIGHT); // moves the cursor 16 lines up
+    printf("\33[16A"); // moves the cursor 16 lines up
     
 }
 
@@ -155,6 +155,7 @@ void draw_pipes(){
 }
 
 void draw(){
+
     // draw border in rectangle
     draw_border();
     draw_bird();
@@ -184,13 +185,16 @@ int quit(){
 }
 
 void main(){
+
     
     hide_cursor();
+
 
     bird.x = 4;
     bird.y = 4;
     int i,j; 
     
+
 
     srand(time(NULL));
     //   initialise pipes
@@ -231,26 +235,27 @@ void main(){
 
    */
 
-    for (size_t i = 0; i < HEIGHT; i++)
+
+    for (i = 0; i < HEIGHT; i++)
     {
         printf("\n");
     }
+
     
     time_t start = time(NULL);
 
     while (!collision() && !quit()) // keep running if no collision and no quit
     {
+
         draw();
 
-        // the method of scanf for input is intrusive,                          // https://cboard.cprogramming.com/cplusplus-programming/112970-getasynckeystate-key-pressed.html
-        //printf("\nEnter you move:  ");                                          // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate
-        //scanf("%c",&move);
-        //getchar();
+
 
         if (GetAsyncKeyState(W)&& bird.y<HEIGHT)
         {
             bird.y -= 2; //  move bird up
         }
+
 
         for (i = 0; i < NoOfPipes; i++)
         {
@@ -266,9 +271,11 @@ void main(){
             
         }
 
+
         bird.y++; //  move bird down by 1 unit, will happen regardless
         Sleep(80); // millisecond delay
     }
+
     time_t end = time(NULL);
 
     printf("\n\n\n %s SECONDS SURVIVED: %d\n",YELLOW,(int)(end - start));
