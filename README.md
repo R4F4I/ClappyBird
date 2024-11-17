@@ -1,37 +1,47 @@
-# ClappyBird
-The famous game but in terminal written in C
+
+<div align="center">
+
+```
+
+   ___   .                                ____                _
+ .'   \  |     ___  \,___, \,___, ,    .  /   \  ` .___    ___/
+ |       |    /   ` |    \ |    \ |    `  |,_-<  | /   \  /   |
+ |       |   |    | |    | |    | |    |  |    ` | |   ' ,'   |
+  `.__, /\__ `.__/| |`---' |`---'  `---|. `----' / /     `___,'
+                    \      \       \___/                      `
+```
+
 
 ![alt text](image.png)
 
-> Credits:
-> - [Rafay Siddiqui](https://github.com/R4F4I)
-> - [Masoom Khan](https://github.com/jetstarfish5599)
-> - [Dev Uthmani](https://github.com/devutmani)
+</div>
 
-# Functionality
+
+
+## 📖 Overview
+ClappyBird is a terminal-based game inspired by the classic Flappy Bird, implemented in C. The player controls a bird that must navigate through pipes by jumping at the right moments while avoiding collisions.
+
 ## 🎮 Game Mechanics and Functionality
 
 ### 🕹️ Controls
-- `Q`: Quit the game
-- `UP Arrow`: Make the bird jump/move upwards
-  - After jumping, the bird will automatically descend at a constant rate
+- **`Q`**: Quit the game
+- **`UP Arrow` or `W`**: Make the bird jump/move upwards
+  - After jumping, the bird will automatically descend at a constant rate.
 
 ### 🖼️ Game Environment
-- Defined game frame with specific:
-  - Height
-  - Width
-  - Consistent update rate
+- The game is played within a defined frame with a specific height and width.
+- The game updates at a consistent rate to ensure smooth gameplay.
 
 ### 🧩 Core Components
 
 #### 🐦 Bird
 - **Characteristics**:
-  - Single bird type
+  - Single bird type.
   - Movement:
-    - User-controlled upward jump
-    - Automatic downward descent
+    - User-controlled upward jump.
+    - Automatic downward descent.
   - Collision Detection:
-    - Game ends if bird hits pipes
+    - The game ends if the bird hits pipes.
 
 #### 🚧 Pipes
 - **Types**:
@@ -40,19 +50,20 @@ The famous game but in terminal written in C
   3. Down Pipe
 
 - **Behavior**:
-  - Spawn randomly within game frame
-  - Move towards the bird
+  - Pipes spawn randomly within the game frame and move towards the bird.
   - Collision rules:
-    - Matching pipe type with bird position = Continue game
-    - Mismatched position = Game over
+    - If the pipe type matches the bird's position, the game continues.
+    - If there’s a mismatch, the game ends.
 
 ### 🔄 Gameplay Flow
+
+<div align="center">
 
 ```mermaid
 graph TD
     A[Game Start] --> B[Initialize Game]
     B --> C[Spawn Bird]
-    C --> D{User Input}
+    C --> D{User  Input}
     D -->|UP Arrow| E[Bird Jumps]
     D -->|Q Key| F[Quit Game]
     E --> G[Bird Descends]
@@ -62,36 +73,39 @@ graph TD
     I -->|No Collision| D
 ```
 
+</div>
 
-## 🛠️ Technical Implementation Notes
 
-**Key Functions**
+
+### 🛠️ Technical Implementation Notes
+
+#### Key Functions
 
 ```C
-void initializeGame();     // Set up game frame and initial state AKA main(){}
-void updateBirdPosition(); // Handle bird movement
-void generatePipes();      // Create random pipe configurations
-void checkCollision();     // Detect bird-pipe interactions
+void main();     // Set up game main(){ }
+void draw();     // Handle bird movement and rendering
+void quit();     // Handle quitting the game
+void collision(); // Detect bird-pipe interactions
 ```
 
 ### Recommended Libraries
 - Windows Console Graphics
 - Random number generation
 - Time-based updates
-
 ### 📊 Performance Considerations
-- Efficient screen clearing
-- Minimal computational overhead
-- Smooth frame updates
-
+- Efficient screen clearing.
+- Minimal computational overhead.
+- Smooth frame updates.
 ### 🚀 Potential Enhancements
-- Score tracking
-- Difficulty progression
-- Multiple bird/pipe skins
-
-
+- Score tracking.
+- Difficulty progression.
+- Multiple bird/pipe skins.
 ### 🛡️ Error Handling
-- Graceful game exit
-- Input validation
-- Memory management
+- Graceful game exit.
+- Input validation.
+- Memory management.
+### 🎉 Credits
+- https://github.com/R4F4I (Rafay Siddiqui)
+- https://github.com/jetstarfish5599 (Masoom Khan)
+- https://github.com/devutmani (Dev Uthmani)
 
