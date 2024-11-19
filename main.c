@@ -37,15 +37,16 @@ The game needs to be in real-time, fgets() is not a good choice
 
 */
 
-# define HEIGHT             16
-# define WIDTH              64
+# define HEIGHT             16              //
+# define WIDTH              64              //
 # define NoOfPipes          3               // the amount of pipes visible in an instances
 # define DIST               25              // distance between two pipes
 # define APERTURE           2               // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
 
 # define WHITE              "\33[0m"        // ANSI code for white output
-# define GREEN              "\33[32m"       // ANSI code for green output
+# define GREEN              "\x1b[102m"       // ANSI code for green output
 # define YELLOW             "\33[33m"       // ANSI code for yellow output
+# define HIDE_CURSOR        "ESC[?25l"      
 
 # define Q                  0x51            // ANSI code for 'q' key
 # define W                  0x57            // ANSI code for 'w' key
@@ -169,12 +170,20 @@ int collision(){
     {
         // the coordinate of a pipe defines the pathway between two pipes, aka aperture, hence the player MUST match it's coordinate
         if (
-            bird.x == pipes[i].x          && 
-            bird.y != pipes[i].y+APERTURE && 
-            bird.y != pipes[i].y-APERTURE
+            bird.x == pipes[i].x              && 
+            (
+                bird.y > pipes[i].y+(2*APERTURE)  || 
+                bird.y < pipes[i].y-(2*APERTURE)
+            )
         ){
             return 1;
-        } 
+        }
+        // collision with ground
+        if (bird.y>HEIGHT)
+        {
+            return 1;
+        }
+         
         
     return 0;
     }
@@ -188,6 +197,8 @@ void main(){
 
     
     hide_cursor();
+
+    //printf("%s",HIDE_CURSOR);
 
 
     bird.x = 4;
@@ -278,5 +289,5 @@ void main(){
 
     time_t end = time(NULL);
 
-    printf("\n\n\n %s SECONDS SURVIVED: %d\n",YELLOW,(int)(end - start));
+    printf("\33[16A \n\n\n %s SECONDS SURVIVED: %d\n",YELLOW,(int)(end - start));
 }
