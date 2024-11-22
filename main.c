@@ -43,10 +43,21 @@ The game needs to be in real-time, fgets() is not a good choice
 # define DIST               25              // distance between two pipes
 # define APERTURE           2               // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
 
-# define WHITE              "\33[0m"        // ANSI code for white output
+# define COLOR_RESET        "\33[0m"        // ANSI code for COLOR_RESET output
 # define GREEN              "\x1b[102m"       // ANSI code for green output
 # define YELLOW             "\33[33m"       // ANSI code for yellow output
 # define HIDE_CURSOR        "ESC[?25l"      
+
+//High intensity background 
+# define BLKHB              "\e[0;100m"
+# define REDHB              "\e[0;101m"
+# define GRNHB              "\e[0;102m"
+# define YELHB              "\e[0;103m"
+# define BLUHB              "\e[0;104m"
+# define MAGHB              "\e[0;105m"
+# define CYNHB              "\e[0;106m"
+# define WHTHB              "\e[0;107m"
+
 
 # define Q                  0x51            // ANSI code for 'q' key
 # define W                  0x57            // ANSI code for 'w' key
@@ -116,9 +127,13 @@ void print_screen(){
             } else if (screen[y][x] == '|' || screen[y][x] == '-') 
             {
                 printf("%s%c", GREEN,screen[y][x]);
-            } else
+            } else if (screen[y][x] == '#')
             {
-                printf("%s%c",WHITE,screen[y][x]);
+                printf("%s%c",BLKHB,screen[y][x]);
+            }
+             else if (screen[y][x] == screen[y][x])
+            {
+                printf("%s%c",CYNHB,screen[y][x]);
             }
         }
         printf("\n");
@@ -155,13 +170,23 @@ void draw_pipes(){
     }
 }
 
+void draw_aperture(){
+    for (size_t i = 0; i < NoOfPipes; i++)
+    {
+        screen[pipes[i].y][pipes[i].x] = 'x';
+    }
+    
+}
+
 void draw(){
 
     // draw border in rectangle
     draw_border();
     draw_bird();
     draw_pipes();
+    draw_aperture();
     print_screen();
+
 }
 
 int collision(){
@@ -169,13 +194,13 @@ int collision(){
     for (i = 0; i < NoOfPipes; i++)
     {
         // the coordinate of a pipe defines the pathway between two pipes, aka aperture, hence the player MUST match it's coordinate
-        if (
-            bird.x == pipes[i].x              && 
-            (
-                bird.y > pipes[i].y+(2*APERTURE)  || 
-                bird.y < pipes[i].y-(2*APERTURE)
-            )
-        ){
+        if (            
+        // a more robust collision detection
+        // the coordinates for the bird happen to contain pipes as well
+        screen[bird.y][bird.x] == '|' || 
+        screen[bird.y][bird.x] == '-'
+        )
+        {   
             return 1;
         }
         // collision with ground
@@ -196,9 +221,9 @@ int quit(){
 void main(){
 
     
-    hide_cursor();
+    //hide_cursor();
 
-    //printf("%s",HIDE_CURSOR);
+    printf("%s",HIDE_CURSOR); 
 
 
     bird.x = 4;
@@ -252,17 +277,30 @@ void main(){
         printf("\n");
     }
 
+
+    printf("    )   ___                      ______              \n");
+    printf("(__/_____) /)                (, /    ) ,       /) \n");
+    printf("  /       // _  __  __         /---(     __  _(/  \n");
+    printf(" /       (/_(_(_/_)_/_)_(_/_) / ____)_(_/ (_(_(_  \n");
+    printf("(______)     .-/ .-/   .-/ (_/ (                  \n");
+    printf("            (_/ (_/   (_/         \n\n\n\n\n\n\n\n\n");
+    printf("Press 'W' to start or 'Q' to quit\n");
     
+    draw();
+
+
+    while (!(GetAsyncKeyState(W) & 0x8000)) {
+        // Do nothing, just wait for the key press
+    }
+    
+
     time_t start = time(NULL);
 
     while (!collision() && !quit()) // keep running if no collision and no quit
     {
-
         draw();
-
-
-
-        if (GetAsyncKeyState(W)&& bird.y<HEIGHT)
+        //                                          V``only move up if the height is greater than one
+        if (GetAsyncKeyState(W)&& bird.y<HEIGHT && bird.y>1)
         {
             bird.y -= 2; //  move bird up
         }
@@ -282,12 +320,13 @@ void main(){
             
         }
 
-
         bird.y++; //  move bird down by 1 unit, will happen regardless
         Sleep(80); // millisecond delay
     }
 
     time_t end = time(NULL);
+    int score = end - start;
 
-    printf("\33[16A \n\n\n %s SECONDS SURVIVED: %d\n",YELLOW,(int)(end - start));
+    printf("\33[16A\n\n\n %s%s SECONDS SURVIVED: %d\n",COLOR_RESET,YELLOW,score);
+
 }
