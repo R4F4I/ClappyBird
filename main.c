@@ -44,8 +44,10 @@ The game needs to be in real-time, fgets() is not a good choice
 # define APERTURE           2               // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
 
 # define COLOR_RESET        "\33[0m"        // ANSI code for COLOR_RESET output
-# define GREEN              "\x1b[102m"       // ANSI code for green output
+# define GREEN_BG           "\x1b[102m"     // ANSI code for green background output
 # define YELLOW             "\33[33m"       // ANSI code for yellow output
+# define GREEN              "\33[32m"       // ANSI code for green output
+# define RED                "\33[31m"       // ANSI code for red output
 # define HIDE_CURSOR        "ESC[?25l"      
 
 //High intensity background 
@@ -58,9 +60,33 @@ The game needs to be in real-time, fgets() is not a good choice
 # define CYNHB              "\e[0;106m"
 # define WHTHB              "\e[0;107m"
 
-
-# define Q                  0x51            // ANSI code for 'q' key
-# define W                  0x57            // ANSI code for 'w' key
+//# define VK_UP
+//# define VK_DOWN
+                                            // all are lowercase inputs
+# define A                  0x41            // ANSI code for 'A' key
+# define B                  0x42            // ANSI code for 'B' key
+# define C                  0x43            // ANSI code for 'C' key
+# define D                  0x44            // ANSI code for 'D' key
+# define E                  0x45            // ANSI code for 'E' key
+# define F                  0x46            // ANSI code for 'F' key
+# define G                  0x47            // ANSI code for 'G' key
+# define H                  0x48            // ANSI code for 'H' key
+# define I                  0x49            // ANSI code for 'I' key
+# define J                  0x4A            // ANSI code for 'J' key
+# define K                  0x4B            // ANSI code for 'K' key
+# define L                  0x4C            // ANSI code for 'L' key
+# define M                  0x4D            // ANSI code for 'M' key
+# define N                  0x4E            // ANSI code for 'N' key
+# define O                  0x4F            // ANSI code for 'O' key
+# define P                  0x50            // ANSI code for 'P' key
+# define Q                  0x51            // ANSI code for 'Q' key
+# define R                  0x52            // ANSI code for 'R' key
+# define S                  0x53            // ANSI code for 'S' key
+# define T                  0x54            // ANSI code for 'T' key
+# define U                  0x55            // ANSI code for 'U' key
+# define V                  0x56            // ANSI code for 'V' key
+# define W                  0x57            // ANSI code for 'W' key
+# define X                  0x58            // ANSI code for 'X' key
 
 // center of mass of components
 typedef struct {
@@ -83,9 +109,11 @@ void hide_cursor() {
 }
 
 
-void draw_border() {
-    int i, j;
+// ?playing game functions
 
+void update_border() {
+    int i, j;
+    // create the border OUTSIDE of the screen
     // Top border
     for (i = 0; i < WIDTH; i++) {
         screen[0][i] = '#';
@@ -111,7 +139,7 @@ void draw_border() {
     }
 }
 
-void draw_bird(){
+void update_bird(){
     //int i, j;
     screen[bird.y][bird.x] = '@';
     
@@ -120,29 +148,35 @@ void draw_bird(){
 void print_screen(){
     int y,x;
     for (y = 0; y < HEIGHT; y++) {
-        for (x = 0; x < WIDTH; x++) {
+        // print the vertical sides
+        printf("%s|",COLOR_RESET);
+        for (x = 1; x < WIDTH-1; x++) {
             if (screen[y][x] == '@')
             {
-                printf("%s%c", YELLOW,screen[y][x]);
+                printf("%s%c", YELHB,screen[y][x]);
             } else if (screen[y][x] == '|' || screen[y][x] == '-') 
             {
-                printf("%s%c", GREEN,screen[y][x]);
-            } else if (screen[y][x] == '#')
+                printf("%s%c", GREEN_BG,screen[y][x]);
+            } 
+            else if (screen[y][x] == '#')
             {
-                printf("%s%c",BLKHB,screen[y][x]);
-            }
+                printf("%s%c",COLOR_RESET,screen[y][x]);
+            } 
+           
              else if (screen[y][x] == screen[y][x])
             {
                 printf("%s%c",CYNHB,screen[y][x]);
             }
         }
+        // print the vertical sides
+        printf("%s|",COLOR_RESET);
         printf("\n");
     }
     printf("\33[16A"); // moves the cursor 16 lines up
     
 }
 
-void draw_pipes(){
+void update_pipes(){
     int i,j,k;
     // 3 pipes, using their coordinates, draw them, only draw them if they are inside the WIDTH
     for(i=0;i<NoOfPipes;i++){
@@ -170,24 +204,26 @@ void draw_pipes(){
     }
 }
 
-void draw_aperture(){
-    for (size_t i = 0; i < NoOfPipes; i++)
-    {
-        screen[pipes[i].y][pipes[i].x] = 'x';
+void update_aperture(){
+    for (size_t i = 0; i < NoOfPipes; i++){
+        if (pipes[i].x < WIDTH){
+            screen[pipes[i].y][pipes[i].x] = 'x';
+        }
     }
-    
 }
 
 void draw(){
 
     // draw border in rectangle
-    draw_border();
-    draw_bird();
-    draw_pipes();
-    draw_aperture();
+    update_border();
+    update_bird();
+    update_pipes();
+    update_aperture();
     print_screen();
 
 }
+
+// ?/playing game functions
 
 int collision(){
     int i;
@@ -214,23 +250,98 @@ int collision(){
     }
 }
 
-int quit(){
+// ? get async wrapper functions
+
+int pressed_W(){
+    return GetAsyncKeyState(W) ? 1 : 0;
+}
+
+int pressed_Q(){
     return GetAsyncKeyState(Q) ? 1 : 0;
 }
 
-void main(){
+int pressed_O(){
+    return GetAsyncKeyState(O) ? 1 : 0;
+}
 
-    
-    //hide_cursor();
+int pressed_B(){
+    return GetAsyncKeyState(B) ? 1 : 0;
+}
 
-    printf("%s",HIDE_CURSOR); 
+// ? /get async wrapper functions
 
+void show_title(){
+    printf("    )   ___                      ______              \n");
+    printf("(__/_____) /)                (, /    ) ,       /) \n");
+    printf("  /       // _  __  __         /---(     __  _(/  \n");
+    printf(" /       (/_(_(_/_)_/_)_(_/_) / ____)_(_/ (_(_(_  \n");
+    printf("(______)     .-/ .-/   .-/ (_/ (                  \n");
+    printf("            (_/ (_/   (_/         \n\n\n\n\n\n\n\n\n");
+}
+
+void show_instructions(){
+    printf("Press %s'W'%s to start or %s'Q'%s to quit\n\n\n\n\n",RED,COLOR_RESET,GREEN,COLOR_RESET);
+}
+
+void clear_screen(){
+    system("cls");
+}
+
+int show_menu(){
+    int choice=0;
+
+    printf("Choose (by pressing 'o') either of the two below\n\n\n");
+    while(!pressed_O()){
+
+        switch (choice)
+        {
+        case 0:
+            printf("PLAY GAME<\n");
+            printf("SEE SCORES\n");
+            break;
+        case 1:
+            printf("PLAY GAME\n");
+            printf("SEE SCORES<\n");
+            break;
+        default:
+            break;
+        }
+
+
+        // virtual keycode for up arrow
+        if(GetAsyncKeyState(VK_UP)){
+            choice--;
+            if (choice<0)
+            {
+                choice = 1;
+            }
+            Sleep(100);
+            
+        }
+        // virtual keycode for down arrow
+        if(GetAsyncKeyState(VK_DOWN)){
+            choice++;
+            if (choice>0)
+            {
+                choice = 0;
+            }
+            Sleep(100);
+            
+        }
+        
+        printf("\33[2A"); // moves the cursor 2 lines up
+        Sleep(100);
+    }
+    return choice;
+}
+
+
+void play_game(){
+    // printf("%s",HIDE_CURSOR); 
 
     bird.x = 4;
     bird.y = 4;
     int i,j; 
-    
-
 
     srand(time(NULL));
     //   initialise pipes
@@ -245,9 +356,6 @@ void main(){
         pipes[i].y = (rand()%7) +5;     // random height between 5 and 11
     }
 
-
-
-
     /* 
         A     B     OUT     (A||B) !(A||B)   !A && !B
        ==============================================
@@ -259,48 +367,25 @@ void main(){
 
 
     */
+    clear_screen();
+    show_title();
+    show_instructions();
 
-   /*
-   events:
-   1. bird descends 
-   2. pipes approach
-   3. pressing 'W' ascends the bird
-   4. bird colliding with pipes OR with the ground ends the game
-   5. colliding with ceiling negates the change in altitude
-
-
-   */
-
-
-    for (i = 0; i < HEIGHT; i++)
-    {
-        printf("\n");
-    }
-
-
-    printf("    )   ___                      ______              \n");
-    printf("(__/_____) /)                (, /    ) ,       /) \n");
-    printf("  /       // _  __  __         /---(     __  _(/  \n");
-    printf(" /       (/_(_(_/_)_/_)_(_/_) / ____)_(_/ (_(_(_  \n");
-    printf("(______)     .-/ .-/   .-/ (_/ (                  \n");
-    printf("            (_/ (_/   (_/         \n\n\n\n\n\n\n\n\n");
-    printf("Press 'W' to start or 'Q' to quit\n");
-    
     draw();
+    //printf("%s",COLOR_RESET);
 
-
-    while (!(GetAsyncKeyState(W) & 0x8000)) {
+    while (!(pressed_W()) && !pressed_Q()) {
         // Do nothing, just wait for the key press
     }
     
 
     time_t start = time(NULL);
 
-    while (!collision() && !quit()) // keep running if no collision and no quit
+    while (!collision() && !pressed_Q()) // keep running if no collision and no quit
     {
         draw();
         //                                          V``only move up if the height is greater than one
-        if (GetAsyncKeyState(W)&& bird.y<HEIGHT && bird.y>1)
+        if (pressed_W()&& bird.y<HEIGHT && bird.y>1)
         {
             bird.y -= 2; //  move bird up
         }
@@ -326,7 +411,37 @@ void main(){
 
     time_t end = time(NULL);
     int score = end - start;
-
+    clear_screen();
     printf("\33[16A\n\n\n %s%s SECONDS SURVIVED: %d\n",COLOR_RESET,YELLOW,score);
+}
+
+
+void show_high_score(){
+    printf("Press B to go back\n");
+    while (!pressed_B()){
+        Sleep(100);
+    }
+}
+
+void main(){
+    clear_screen();
+    hide_cursor();
+    
+    int option;
+    //TODO choose b/w playing or checking the high score
+    //TODO for high score use filing, to store a 3 letter name 'RFQ' and the recorded score in a .csv
+    //TODO only store the top ten score
+    //TODO if file does not exist, initialize the file with the name 'NUL' score '0'
+
+    show_title();
+
+    option = show_menu();
+
+    if (option == 0)
+    {
+        play_game();
+    } else if (option == 1){
+        show_high_score();
+    }
 
 }
