@@ -268,7 +268,13 @@ int pressed_B(){
     return GetAsyncKeyState(B) ? 1 : 0;
 }
 
+int pressed_enter(){
+    return GetAsyncKeyState(VK_RETURN) ? 1 : 0;
+}
+
 // ? /get async wrapper functions
+
+// ? show functions
 
 void show_title(){
     printf("    )   ___                      ______              \n");
@@ -283,25 +289,22 @@ void show_instructions(){
     printf("Press %s'W'%s to start or %s'Q'%s to quit\n\n\n\n\n",RED,COLOR_RESET,GREEN,COLOR_RESET);
 }
 
-void clear_screen(){
-    system("cls");
-}
-
 int show_menu(){
     int choice=0;
 
+    printf("(use UP & DOWN  arrow keys to navigate)\n");
     printf("Choose (by pressing 'o') either of the two below\n\n\n");
     while(!pressed_O()){
 
         switch (choice)
         {
         case 0:
-            printf("PLAY GAME<\n");
-            printf("SEE SCORES\n");
+            printf("%sPLAY GAME  <%s\n",RED,COLOR_RESET);
+            printf("SEE SCORES          %s\n",COLOR_RESET); // added whitespaces to clear artifacts after refresh
             break;
         case 1:
-            printf("PLAY GAME\n");
-            printf("SEE SCORES<\n");
+            printf("PLAY GAME           %s\n",COLOR_RESET); // added whitespaces to clear artifacts after refresh
+            printf("%sSEE SCORES <%s\n",RED,COLOR_RESET);
             break;
         default:
             break;
@@ -311,6 +314,7 @@ int show_menu(){
         // virtual keycode for up arrow
         if(GetAsyncKeyState(VK_UP)){
             choice--;
+            // circle back to bottom
             if (choice<0)
             {
                 choice = 1;
@@ -321,7 +325,8 @@ int show_menu(){
         // virtual keycode for down arrow
         if(GetAsyncKeyState(VK_DOWN)){
             choice++;
-            if (choice>0)
+            // circle back to top
+            if (choice>1)
             {
                 choice = 0;
             }
@@ -330,11 +335,16 @@ int show_menu(){
         }
         
         printf("\33[2A"); // moves the cursor 2 lines up
-        Sleep(100);
+        Sleep(80);
     }
     return choice;
 }
 
+// ? /show functions
+
+void clear_screen(){
+    system("cls");
+}
 
 void play_game(){
     // printf("%s",HIDE_CURSOR); 
@@ -436,6 +446,9 @@ void main(){
     show_title();
 
     option = show_menu();
+
+    // the game will quit from by pressing 'Q'
+    // there should be a way to navigate from play_game to show_high_score and back to play_game
 
     if (option == 0)
     {
