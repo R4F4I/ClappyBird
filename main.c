@@ -37,17 +37,19 @@ The game needs to be in real-time, fgets() is not a good choice
 
 */
 
-# define HEIGHT             16              //
-# define WIDTH              64              //
-# define NoOfPipes          3               // the amount of pipes visible in an instances
-# define DIST               25              // distance between two pipes
-# define APERTURE           2               // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
+# define HEIGHT             16                  //
+# define WIDTH              64                  //
+# define NoOfPipes          3                   // the amount of pipes visible in an instances
+# define DIST               25                  // distance between two pipes
+# define APERTURE           2                   // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
+# define MAX_SCORES         10                  // max amount of scores to be saved
+# define FILENAME           "scores_list.txt"   // file name to save the scores
 
-# define COLOR_RESET        "\33[0m"        // ANSI code for COLOR_RESET output
-# define GREEN_BG           "\x1b[102m"     // ANSI code for green background output
-# define YELLOW             "\33[33m"       // ANSI code for yellow output
-# define GREEN              "\33[32m"       // ANSI code for green output
-# define RED                "\33[31m"       // ANSI code for red output
+# define COLOR_RESET        "\33[0m"            // ANSI code for COLOR_RESET output
+# define GREEN_BG           "\x1b[102m"         // ANSI code for green background output
+# define YELLOW             "\33[33m"           // ANSI code for yellow output
+# define GREEN              "\33[32m"           // ANSI code for green output
+# define RED                "\33[31m"           // ANSI code for red output
 # define HIDE_CURSOR        "ESC[?25l"      
 
 //High intensity background 
@@ -60,9 +62,7 @@ The game needs to be in real-time, fgets() is not a good choice
 # define CYNHB              "\e[0;106m"
 # define WHTHB              "\e[0;107m"
 
-//# define VK_UP
-//# define VK_DOWN
-                                            // all are lowercase inputs
+// all are lowercase inputs
 # define A                  0x41            // ANSI code for 'A' key
 # define B                  0x42            // ANSI code for 'B' key
 # define C                  0x43            // ANSI code for 'C' key
@@ -95,10 +95,19 @@ typedef struct {
 
 } entity;
 
+typedef struct {
+    char name[3];
+    int score;
+} list;
+
+list scores_list[MAX_SCORES];
+
 // global variables
 entity bird;
 entity pipes[3];
 char screen[HEIGHT][WIDTH];
+char player_name[3];
+time_t game_start;
 
 void hide_cursor() {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -172,7 +181,7 @@ void print_screen(){
         printf("%s|",COLOR_RESET);
         printf("\n");
     }
-    printf("\33[16A"); // moves the cursor 16 lines up
+    printf("\33[18A"); // moves the cursor 18 lines up 2 more lines for the score
     
 }
 
@@ -205,11 +214,17 @@ void update_pipes(){
 }
 
 void update_aperture(){
-    for (size_t i = 0; i < NoOfPipes; i++){
+    for (int i = 0; i < NoOfPipes; i++){
         if (pipes[i].x < WIDTH){
             screen[pipes[i].y][pipes[i].x] = 'x';
         }
     }
+}
+
+void update_score(){
+    time_t current_time = time(NULL);
+    int curr_score=current_time - game_start;
+    printf("%sSCORE: %d%s               \n\n",GREEN,curr_score,COLOR_RESET);
 }
 
 void draw(){
@@ -219,6 +234,7 @@ void draw(){
     update_bird();
     update_pipes();
     update_aperture();
+    update_score();
     print_screen();
 
 }
@@ -277,15 +293,15 @@ int pressed_enter(){
 // ? show functions
 
 void show_title(){
-    printf("    )   ___                      ______              \n");
-    printf("(__/_____) /)                (, /    ) ,       /) \n");
-    printf("  /       // _  __  __         /---(     __  _(/  \n");
-    printf(" /       (/_(_(_/_)_/_)_(_/_) / ____)_(_/ (_(_(_  \n");
-    printf("(______)     .-/ .-/   .-/ (_/ (                  \n");
-    printf("            (_/ (_/   (_/         \n\n\n\n\n\n\n\n\n");
+    printf("%s    )   ___                      ______              \n",YELLOW);
+      printf("(__/_____) /)                (, /    ) ,       /) \n");
+      printf("  /       // _  __  __         /---(     __  _(/  \n");
+      printf(" /       (/_(_(_/_)_/_)_(_/_) / ____)_(_/ (_(_(_  \n");
+      printf("(______)     .-/ .-/   .-/ (_/ (                  \n");
+      printf("            (_/ (_/   (_/         %s\n\n\n\n\n\n\n\n\n",COLOR_RESET);
 }
 
-void show_instructions(){
+void show_game_instructions(){
     printf("Press %s'W'%s to start or %s'Q'%s to quit\n\n\n\n\n",RED,COLOR_RESET,GREEN,COLOR_RESET);
 }
 
@@ -301,10 +317,17 @@ int show_menu(){
         case 0:
             printf("%sPLAY GAME  <%s\n",RED,COLOR_RESET);
             printf("SEE SCORES          %s\n",COLOR_RESET); // added whitespaces to clear artifacts after refresh
+            printf("%sQUIT                \n",COLOR_RESET);
             break;
         case 1:
             printf("PLAY GAME           %s\n",COLOR_RESET); // added whitespaces to clear artifacts after refresh
             printf("%sSEE SCORES <%s\n",RED,COLOR_RESET);
+            printf("%sQUIT                \n",COLOR_RESET);
+            break;
+        case 2:
+            printf("PLAY GAME           %s\n",COLOR_RESET); // added whitespaces to clear artifacts after refresh
+            printf("SEE SCORES          %s\n",COLOR_RESET);
+            printf("%sQUIT       <%s\n",RED,COLOR_RESET);
             break;
         default:
             break;
@@ -317,7 +340,7 @@ int show_menu(){
             // circle back to bottom
             if (choice<0)
             {
-                choice = 1;
+                choice = 2;
             }
             Sleep(100);
             
@@ -326,7 +349,7 @@ int show_menu(){
         if(GetAsyncKeyState(VK_DOWN)){
             choice++;
             // circle back to top
-            if (choice>1)
+            if (choice>2)
             {
                 choice = 0;
             }
@@ -334,8 +357,8 @@ int show_menu(){
             
         }
         
-        printf("\33[2A"); // moves the cursor 2 lines up
-        Sleep(80);
+        printf("\33[3A"); // moves the cursor 2 lines up
+        Sleep(50);
     }
     return choice;
 }
@@ -346,7 +369,7 @@ void clear_screen(){
     system("cls");
 }
 
-void play_game(){
+int play_game(){
     // printf("%s",HIDE_CURSOR); 
 
     bird.x = 4;
@@ -366,21 +389,6 @@ void play_game(){
         pipes[i].y = (rand()%7) +5;     // random height between 5 and 11
     }
 
-    /* 
-        A     B     OUT     (A||B) !(A||B)   !A && !B
-       ==============================================
-        0     0       1        0      1         1
-        0     1       0        1      0         0
-        1     0       0        1      0         0
-   //   1     1      1/0       0      1         0
-
-
-
-    */
-    clear_screen();
-    show_title();
-    show_instructions();
-
     draw();
     //printf("%s",COLOR_RESET);
 
@@ -389,7 +397,7 @@ void play_game(){
     }
     
 
-    time_t start = time(NULL);
+    game_start = time(NULL);
 
     while (!collision() && !pressed_Q()) // keep running if no collision and no quit
     {
@@ -420,41 +428,166 @@ void play_game(){
     }
 
     time_t end = time(NULL);
-    int score = end - start;
+    int score = end - game_start;
     clear_screen();
-    printf("\33[16A\n\n\n %s%s SECONDS SURVIVED: %d\n",COLOR_RESET,YELLOW,score);
+    //printf("\33[16A\n\n\n %s%s SECONDS SURVIVED: %d\n",COLOR_RESET,YELLOW,score);
+    return score;
 }
 
+void print_credits(){
+    printf("----------------------\n");
+    printf("Thank You For Playing!\n");
+    printf("----------------------\n\n\n");
+    printf("Credits:\n");
+    printf("Rafay Siddiqui\n");
+    printf("Masoom Khan\n");
+    printf("Dev Kumar\n");
+}
 
-void show_high_score(){
-    printf("Press B to go back\n");
+// ? score handling functions
+
+void fetch_scores(){
+    FILE *fptr;
+    fptr = fopen(FILENAME, "r");
+    int i;
+
+    if (fptr == NULL){
+        printf("Could not open file %s\n", FILENAME);
+    }
+
+    for (i = 0; i < MAX_SCORES; i++)
+    {
+        fscanf(fptr,"%[^,],%d\n",scores_list[i].name,&scores_list[i].score);
+    }
+    fclose(fptr);
+}
+
+void show_scores(){
+    int i;
+    printf("--------------------\n");
+    printf("  NAME   |   SCORE  \n");
+    printf("--------------------\n");
+    for (i = 0; i < MAX_SCORES; i++)
+    {
+        if(strcmp(scores_list[i].name,player_name)==0){
+            printf("%s  %s    |     %d  %s< YOU\n",GRNHB,scores_list[i].name,scores_list[i].score,COLOR_RESET);
+        } else{
+            printf("  %s    |     %d\n",scores_list[i].name,scores_list[i].score);
+        }
+        
+    }
+
+    printf("\nPress B to go back\n");
     while (!pressed_B()){
         Sleep(100);
     }
 }
 
-void main(){
-    clear_screen();
-    hide_cursor();
-    
-    int option;
-    //TODO choose b/w playing or checking the high score
-    //TODO for high score use filing, to store a 3 letter name 'RFQ' and the recorded score in a .csv
-    //TODO only store the top ten score
-    //TODO if file does not exist, initialize the file with the name 'NUL' score '0'
-
-    show_title();
-
-    option = show_menu();
-
-    // the game will quit from by pressing 'Q'
-    // there should be a way to navigate from play_game to show_high_score and back to play_game
-
-    if (option == 0)
+// inserts the value of the score into the scores_list structure
+void insert_score(int score,char player_name[]){
+    int i,j;
+    for (i = 0; i < MAX_SCORES; i++)
     {
-        play_game();
-    } else if (option == 1){
-        show_high_score();
+        if (scores_list[i].score<score)
+        {
+            // make space for the new score
+            for (j = MAX_SCORES-1; j > i; j--)
+            {
+                strcpy(scores_list[j].name,scores_list[j-1].name);
+                scores_list[j].score = scores_list[j-1].score;
+            }
+            // insert the score
+            scores_list[i].score=score;
+            strcpy(scores_list[i].name,player_name);
+            return; // after inserting the player name, exit
+        }
+        
     }
+}
+
+/* 
+void insert_score(int score, char name[]) {
+    int i;
+    
+    // Check if the score is high enough to be inserted
+    for (i = 0; i < MAX_SCORES; i++) {
+        if (scores_list[i].score < score) {
+            // Shift scores down to make space for the new score
+            for (int j = MAX_SCORES - 1; j > i; j--) {
+                scores_list[j] = scores_list[j - 1];
+            }
+            // Insert the new score
+            scores_list[i].score = score;
+            strcpy(scores_list[i].name, name);
+            return; // Exit after insertion
+        }
+    }
+    
+    // If the score is not high enough to be in the top scores, do nothing
+}
+ */
+
+void write_to_file(){
+    FILE *fptr;
+    fptr = fopen(FILENAME, "w");
+    int i;
+
+
+    if (fptr == NULL){
+        printf("Could not open file %s\n", FILENAME);
+    }
+
+    for (i = 0; i < MAX_SCORES; i++)
+    {
+        fprintf(fptr,"%s,%d\n",scores_list[i].name,scores_list[i].score);
+    }
+    fclose(fptr);
+}
+
+// ? /score handling functions
+
+void main(){
+    int score;
+    int option=-1;
+    hide_cursor();
+
+    // get scores from the file
+    fetch_scores();
+
+    // keeping loop between options until the user chooses to exit
+    // option 2 will exit the program
+    while(option!=2){
+        clear_screen();
+        show_title();
+        option = show_menu();
+        // option 0 is to play game
+        if (option == 0)
+        {
+            // initialise the game
+            clear_screen();
+            show_title();
+            printf("Enter your name (of 3 char) to start the game: ");
+            scanf("%s",player_name);
+            show_game_instructions();
+            score = play_game();
+            // run this subroutine regardless of the score, it will also check if the score is high enough to be stored in the scores_list structure
+            insert_score(score,player_name);
+
+        } 
+        // option 1 is to show scores
+        else if (option == 1)
+        {
+            clear_screen();
+            show_title();
+            show_scores();
+        } 
+    }
+
+    // exit the program
+    clear_screen();
+    show_title();
+    print_credits();
+    // write the scores to file before exiting
+    write_to_file();
 
 }
