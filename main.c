@@ -52,8 +52,8 @@ Functionalities:
 #include <time.h>                               // for time functions mostly scores
 
 
-# define HEIGHT             16                  //
-# define WIDTH              64                  //
+# define HEIGHT             16                  // screen height
+# define WIDTH              64                  // screen width
 # define NoOfPipes          3                   // the amount of pipes visible in an instances
 # define DIST               25                  // distance between two pipes
 # define APERTURE           2                   // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
@@ -145,9 +145,7 @@ void update_border() {
 }
 
 void update_bird(){
-    //int i, j;
     screen[bird.y][bird.x] = '@';
-    
 }
 
 void print_screen(){
@@ -158,7 +156,7 @@ void print_screen(){
         for (x = 1; x < WIDTH-1; x++) {
             if (screen[y][x] == '@')
             {
-                printf("%s%c", YELHB,screen[y][x]);
+                printf("%c",screen[y][x]);
             } else if (screen[y][x] == '|' || screen[y][x] == '-') 
             {
                 printf("%s%c", GREEN_BG,screen[y][x]);
@@ -190,7 +188,7 @@ void update_pipes(){
             {
                 if  (
                         j < pipes[i].y - APERTURE ||
-                        j > pipes[i].y + APERTURE //&& j != pipes[i].y 
+                        j > pipes[i].y + APERTURE
                     )
                     {
                         screen[j][pipes[i].x] = '|';
@@ -229,7 +227,7 @@ void draw(){
     update_border();
     update_bird();
     update_pipes();
-    update_aperture();
+    // update_aperture();
     update_score();
     print_screen();
 
@@ -242,13 +240,13 @@ int collision(){
     for (i = 0; i < NoOfPipes; i++)
     {
         // the coordinate of a pipe defines the pathway between two pipes, aka aperture, hence the player MUST match it's coordinate
-        if (            
+        if (
         // a more robust collision detection
         // the coordinates for the bird happen to contain pipes as well
         screen[bird.y][bird.x] == '|' || 
         screen[bird.y][bird.x] == '-'
         )
-        {   
+        {
             return 1;
         }
         // collision with ground
@@ -256,8 +254,6 @@ int collision(){
         {
             return 1;
         }
-         
-        
     return 0;
     }
 }
