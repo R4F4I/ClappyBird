@@ -1,41 +1,56 @@
-
-#include <windows.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <time.h>
-
 /*
 Functionalities:
+- Main
+    - fetch scores from scores file
+    - show menu
+        - Play Game
+            * View Score
+            - during game play show the user's scores
 
-Controls / buttons:
-- press q button to close the game
-- press up button to move the 'bird' 
-- (after it moves up the bird will start descending at a constant rate)
+            * Controls / buttons:
+            - press q button to close the game
+            - press up button to move the 'bird' 
+            - (after it moves up the bird will start descending at a constant rate)
 
-environment:
-- The bird will exist in a 'frame'
-- This frame will have set height / width
-- This frame will update at a constant rate
+            * environment:
+            - The bird will exist in a 'frame'
+            - This frame will have set height / width
+            - This frame will update at a constant rate
 
-components:
-- Inside the frame there will exist a bird and 'pipes'
-- There will be 1 type of bird and 3 types of pipes
+            * components:
+            - Inside the frame there will exist a bird and 'pipes'
+            - There will be 1 type of bird and 3 types of pipes
 
-Bird:
-- The bird will either move up or down
-- The user will make the bird go up, the bird will automatically go down
-- If the bird collides with a pipes the program stops
+            * Bird:
+            - The bird will either move up or down
+            - The user will make the bird go up, the bird will automatically go down
+            - If the bird collides with a pipes the program stops
 
-Pipes:
-- The pipes of the 3 different types: 'up' , 'middle' , 'down'
-- These pipes will appear into the frame at randomly and will come towards the bird
-- if the pipes's type and the bird's position match the program will continue to run and the pipes will eventually move out of frame
+            * Pipes:
+            - The pipes of the 3 different types: 'up' , 'middle' , 'down'
+            - These pipes will appear into the frame at randomly and will come towards the bird
+            - if the pipes's type and the bird's position match the program will continue to run and the pipes will eventually move out of frame
 
-The game needs to be in real-time, fgets() is not a good choice 
+        - Show scores
+            - display scores
+            - highlight section if it matches the user's name
+        - quit
+    - save scores to scores file
+    - credits
+        - print credits
+    - quit
+        - exit program
+
+
 
 
 */
+
+#include <windows.h>                            // for windows API
+#include <string.h>                             // for string functions
+#include <stdio.h>                              // for input/output functions
+#include <time.h>                               // for time functions mostly scores
+
 
 # define HEIGHT             16                  //
 # define WIDTH              64                  //
@@ -52,7 +67,7 @@ The game needs to be in real-time, fgets() is not a good choice
 # define RED                "\33[31m"           // ANSI code for red output
 # define HIDE_CURSOR        "ESC[?25l"      
 
-//High intensity background 
+//High intensity background colors
 # define BLKHB              "\e[0;100m"
 # define REDHB              "\e[0;101m"
 # define GRNHB              "\e[0;102m"
@@ -63,30 +78,11 @@ The game needs to be in real-time, fgets() is not a good choice
 # define WHTHB              "\e[0;107m"
 
 // all are lowercase inputs
-# define A                  0x41            // ANSI code for 'A' key
+
 # define B                  0x42            // ANSI code for 'B' key
-# define C                  0x43            // ANSI code for 'C' key
-# define D                  0x44            // ANSI code for 'D' key
-# define E                  0x45            // ANSI code for 'E' key
-# define F                  0x46            // ANSI code for 'F' key
-# define G                  0x47            // ANSI code for 'G' key
-# define H                  0x48            // ANSI code for 'H' key
-# define I                  0x49            // ANSI code for 'I' key
-# define J                  0x4A            // ANSI code for 'J' key
-# define K                  0x4B            // ANSI code for 'K' key
-# define L                  0x4C            // ANSI code for 'L' key
-# define M                  0x4D            // ANSI code for 'M' key
-# define N                  0x4E            // ANSI code for 'N' key
 # define O                  0x4F            // ANSI code for 'O' key
-# define P                  0x50            // ANSI code for 'P' key
 # define Q                  0x51            // ANSI code for 'Q' key
-# define R                  0x52            // ANSI code for 'R' key
-# define S                  0x53            // ANSI code for 'S' key
-# define T                  0x54            // ANSI code for 'T' key
-# define U                  0x55            // ANSI code for 'U' key
-# define V                  0x56            // ANSI code for 'V' key
 # define W                  0x57            // ANSI code for 'W' key
-# define X                  0x58            // ANSI code for 'X' key
 
 // center of mass of components
 typedef struct {
@@ -103,11 +99,11 @@ typedef struct {
 list scores_list[MAX_SCORES];
 
 // global variables
-entity bird;
-entity pipes[3];
-char screen[HEIGHT][WIDTH];
-char player_name[3];
-time_t game_start;
+entity bird;                                // handles bird's position
+entity pipes[3];                            // handles the 3 pipe's position
+char screen[HEIGHT][WIDTH];                 // handles the game screen
+char player_name[3];                        // handles the player's name
+time_t game_start;                          // handles the game start time
 
 void hide_cursor() {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -504,28 +500,6 @@ void insert_score(int score,char player_name[]){
         
     }
 }
-
-/* 
-void insert_score(int score, char name[]) {
-    int i;
-    
-    // Check if the score is high enough to be inserted
-    for (i = 0; i < MAX_SCORES; i++) {
-        if (scores_list[i].score < score) {
-            // Shift scores down to make space for the new score
-            for (int j = MAX_SCORES - 1; j > i; j--) {
-                scores_list[j] = scores_list[j - 1];
-            }
-            // Insert the new score
-            scores_list[i].score = score;
-            strcpy(scores_list[i].name, name);
-            return; // Exit after insertion
-        }
-    }
-    
-    // If the score is not high enough to be in the top scores, do nothing
-}
- */
 
 void write_to_file(){
     FILE *fptr;
