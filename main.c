@@ -156,7 +156,7 @@ void print_screen(){
         for (x = 1; x < WIDTH-1; x++) {
             if (screen[y][x] == '@')
             {
-                printf("%c",screen[y][x]);
+                printf("%s%c",BLKHB,screen[y][x]);
             } else if (screen[y][x] == '|' || screen[y][x] == '-') 
             {
                 printf("%s%c", GREEN_BG,screen[y][x]);
