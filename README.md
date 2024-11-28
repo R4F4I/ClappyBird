@@ -3,104 +3,114 @@
 
 # ClappyBird
 
-
-
-![alt text](image-1.png)
+![alt text](image-2.png)
 </div>
 
+## Table of Contents
+1. [Overview](#overview)
+2. [Installation Instructions](#installation-instructions)
+3. [Gameplay Instructions](#gameplay-instructions)
+4. [Control Flow](#control-flow)
+5. [Program Features](#program-features)
+6. [Credits](#credits)
 
+---
 
-## 📖 Overview
-ClappyBird is a terminal-based game inspired by the classic Flappy Bird, implemented in C. The player controls a bird that must navigate through pipes by jumping at the right moments while avoiding collisions.
+## Overview
 
-## ⏳ Compiling
-- to run the code, compile using `gcc .\main.c -o .\main.exe`
+This is a simple, text-based version of the popular **Flappy Bird** game implemented in **C**. It simulates the movement of a bird inside a frame, where the player controls the bird's vertical movement and tries to avoid colliding with pipes that appear randomly. The game features scoring, and the player's score is saved in a text file to track the top 10 high scores. The game also supports viewing high scores and credits.
 
-## 🎮 Game Mechanics and Functionality
+---
 
-### 🕹️ Controls
-- **`Q`**: Quit the game
-- **`UP Arrow` or `W`**: Make the bird jump/move upwards
-  - After jumping, the bird will automatically descend at a constant rate.
+## Installation Instructions
 
-### 🖼️ Game Environment
-- The game is played within a defined frame with a specific height and width.
-- The game updates at a consistent rate to ensure smooth gameplay.
+To run the game:
 
-### 🧩 Core Components
+1. **Clone or download the repository**.
+2. **Compile** the `main.c` file using a C compiler:
+   ```
+   gcc main.c -o flappy_bird_game.exe
+   ```
+3. **Run the game**:
+   ```
+   ./flappy_bird_game.exe
+   ```
 
-#### 🐦 Bird
-- **Characteristics**:
-  - Single bird type.
-  - Movement:
-    - User-controlled upward jump.
-    - Automatic downward descent.
-  - Collision Detection:
-    - The game ends if the bird hits pipes.
+**Dependencies**: The program uses the Windows API for handling asynchronous key presses and hiding the cursor. This is specifically designed for Windows systems.
 
-#### 🚧 Pipes
-- **Types**:
-  1. Up Pipe
-  2. Middle Pipe
-  3. Down Pipe
+---
 
-- **Behavior**:
-  - Pipes spawn randomly within the game and move towards the bird.
-  - Collision rules:
-    - If the pipe type matches the bird's position, the game continues.
-    - If there’s a mismatch, the game ends.
+## Gameplay Instructions
 
-### 🔄 Gameplay Flow
+1. **Start the Game**: Select "PLAY GAME" from the main menu.
+2. **Control the Bird**:
+   - **Press `W`** to make the bird fly up.
+   - **Press `Q`** to quit the game.
+   - The bird will start descending at a constant rate after flying up.
+3. **Goal**: Avoid the pipes and survive as long as possible.
+   - Pipes move towards the bird from right to left.
+   - If the bird collides with a pipe or hits the ground, the game ends.
+4. **Scoring**: Your score is based on how long you survive.
+5. **High Scores**: View the top 10 scores at any time from the main menu.
+6. **Exit**: You can exit the game from the main menu.
 
-<div align="center">
+---
+
+## Control Flow
+
+Below is a **diagram** illustrating the control flow of the game.
 
 ```mermaid
 graph TD
-    A[Game Start] --> B[Initialize Game]
-    B --> C[Spawn Bird]
-    C --> D{User  Input}
-    D -->|W Key| E[Bird Jumps]
-    D -->|Q Key| J
-    E --> G[Bird Descends]
-    G --> H[Spawn Pipes]
-    H --> I{Pipe with Bird}
-    I -->|Collision| J[Game Over]
-    I -->|No Collision| D
+    A[Start] --> B[Hide Cursor and Fetch Scores]
+    B --> C[Show Title]
+    C --> D[Show Main Menu]
+    D --> E[Get User Menu Option]
+    E -->|Play Game| F[Prompt for Player Name]
+    F --> G[Initialize Game]
+    G --> H[Play Game Loop]
+    H --> I[Check for Collision]
+    I -->|No Collision| H
+    I -->|Collision Detected| J[End Game]
+    J --> K[Insert Score into Leaderboard]
+    K --> L[Show High Scores]
+    L --> D
+    D -->|View Scores| M[Display Scores]
+    M --> D
+    D -->|Quit| N[Exit Program]
+    N --> O[Save Scores to File]
+    O --> P[Print Credits]
+    P --> Q[End]
 ```
 
-</div>
+### Main Menu
+The main menu allows the user to:
+- Play the game.
+- View high scores.
+- Quit the program.
 
+### Game Loop
+The game loop runs continuously while the player hasn't hit a pipe or the ground:
+- The bird can be controlled by pressing `W` to move up.
+- Pipes are randomly generated, and the screen updates each frame.
+- If a collision happens, the game ends and the score is recorded.
 
+---
 
-### 🛠️ Technical Implementation Notes
+## Program Features
 
-#### Key Functions
+- **Game Loop**: The game continuously updates the bird's position and the movement of pipes.
+- **Collision Detection**: If the bird collides with a pipe or the ground, the game ends.
+- **Score Handling**: The player's score is calculated based on survival time, and the top 10 scores are stored.
+- **High Scores**: Players can view the high scores at any time.
+- **Menu Navigation**: The user can navigate the menu using the arrow keys and choose between playing the game, viewing scores, or quitting the program.
 
-```C
-void main();     // Set up game main(){ }
-void draw();     // Handle bird movement and rendering
-void quit();     // Handle quitting the game
-void collision(); // Detect bird-pipe interactions
-```
+---
 
-### Recommended Libraries
-- Windows Console Graphics
-- Random number generation
-- Time-based updates
-### 📊 Performance Considerations
-- Efficient screen clearing.
-- Minimal computational overhead.
-- Smooth frame updates.
-### 🚀 Potential Enhancements
-- Score tracking.
-- Difficulty progression.
-- Multiple bird/pipe skins.
-### 🛡️ Error Handling
-- Graceful game exit.
-- Input validation.
-- Memory management.
-### 🎉 Credits
-- https://github.com/R4F4I (Rafay Siddiqui)
-- https://github.com/jetstarfish5599 (Masoom Khan)
-- https://github.com/devutmani (Dev Uthmani)
+## Credits
+
+- **Developer**: Rafay Siddiqui
+- **Collaborators**: Masoom Khan, Dev Kumar
+
+---
 
