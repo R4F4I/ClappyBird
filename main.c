@@ -431,9 +431,9 @@ void print_credits(){
     printf("Thank You For Playing!\n");
     printf("----------------------\n\n\n");
     printf("Credits:\n");
-    printf("Rafay Siddiqui\n");
-    printf("Masoom Khan\n");
-    printf("Dev Kumar\n");
+    printf("Rafay Siddiqui--24K-0009\n");
+    printf("Masoom Khan-----24K-0001\n");
+    printf("Dev Kumar-------24K-0028\n");
 }
 
 // ? score handling functions
