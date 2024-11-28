@@ -109,10 +109,8 @@ The game loop runs continuously while the player hasn't hit a pipe or the ground
 
 ## Credits
 
-- **Developer**: 
-   -  Rafay Siddiqui **(24K-0009)**
-
 - **Collaborators**: 
+   -  Rafay Siddiqui **(24K-0009)**
    -  Masoom Khan    **(24K-0001)**
    -  Dev Kumar      **(24K-0028)**
 
