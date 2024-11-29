@@ -3,7 +3,7 @@
 
 # ClappyBird
 
-![alt text](image-2.png)
+![alt text](image.png)
 </div>
 
 ## Table of Contents
