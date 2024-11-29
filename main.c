@@ -61,6 +61,7 @@ Functionalities:
 # define FILENAME           "scores_list.txt"   // file name to save the scores
 
 # define COLOR_RESET        "\33[0m"            // ANSI code for COLOR_RESET output
+# define CYAN               "\033[36m"
 # define GREEN_BG           "\x1b[102m"         // ANSI code for green background output
 # define YELLOW             "\33[33m"           // ANSI code for yellow output
 # define GREEN              "\33[32m"           // ANSI code for green output
@@ -166,7 +167,7 @@ void print_screen(){
                 printf("%s%c",COLOR_RESET,screen[y][x]);
             } 
            
-             else if (screen[y][x] == screen[y][x])
+             else
             {
                 printf("%s%c",CYNHB,screen[y][x]);
             }
@@ -227,7 +228,7 @@ void draw(){
     update_border();
     update_bird();
     update_pipes();
-    // update_aperture();
+    //update_aperture();
     update_score();
     print_screen();
 
@@ -294,11 +295,11 @@ void show_title(){
 }
 
 void show_game_instructions(){
-    printf("Press %s'W'%s to start or %s'Q'%s to quit\n\n\n\n\n",RED,COLOR_RESET,GREEN,COLOR_RESET);
+    printf("Press %s'W'%s to jump or %s'Q'%s to quit\n\n\n\n\n",GREEN,COLOR_RESET,RED,COLOR_RESET);
 }
 
 int show_menu(){
-    int choice=0;
+    int choice=-1;
 
     printf("(use UP & DOWN  arrow keys to navigate)\n");
     printf("Choose (by pressing 'o') either of the two below\n\n\n");
@@ -306,6 +307,11 @@ int show_menu(){
 
         switch (choice)
         {
+        case -1:
+            printf("PLAY GAME           %s\n",COLOR_RESET); 
+            printf("SEE SCORES          %s\n",COLOR_RESET); // show menu with no selected option to prevent automaically choosing play game
+            printf("%sQUIT                \n",COLOR_RESET);
+            break;
         case 0:
             printf("%sPLAY GAME  <%s\n",RED,COLOR_RESET);
             printf("SEE SCORES          %s\n",COLOR_RESET); // added whitespaces to clear artifacts after refresh
@@ -385,6 +391,7 @@ int play_game(){
     //printf("%s",COLOR_RESET);
 
     while (!(pressed_W()) && !pressed_Q()) {
+        Sleep(80); // delay for 80 milliseconds
         // Do nothing, just wait for the key press
     }
     
@@ -426,14 +433,19 @@ int play_game(){
     return score;
 }
 
-void print_credits(){
-    printf("----------------------\n");
-    printf("Thank You For Playing!\n");
-    printf("----------------------\n\n\n");
-    printf("Credits:\n");
-    printf("Rafay Siddiqui--24K-0009\n");
-    printf("Masoom Khan-----24K-0001\n");
-    printf("Dev Kumar-------24K-0028\n");
+void print_credits() {
+    //  header
+    printf("%s----------------------%s\n", CYAN, COLOR_RESET);
+    printf("%sThank You For Playing!%s\n", YELLOW, COLOR_RESET);
+    printf("%s----------------------%s\n\n", CYAN, COLOR_RESET);
+    
+    //  credits
+    printf("Credits:%s\n\n", COLOR_RESET);
+    
+    //  List of credits
+    printf("%sRafay Siddiqui -- 24K-0009%s\n", GREEN, COLOR_RESET);
+    printf("%sMasoom Khan ----- 24K-0001%s\n", GREEN, COLOR_RESET);
+    printf("%sDev Kumar ------- 24K-0028%s\n\n", GREEN, COLOR_RESET);
 }
 
 // ? score handling functions
@@ -536,7 +548,7 @@ void main(){
             // initialise the game
             clear_screen();
             show_title();
-            printf("Enter your name (of 3 char) to start the game: ");
+            printf("Enter your name (like %s'MSM'%s and NOT %s'masoom'%s) \nto start the game:",GREEN,COLOR_RESET,RED,COLOR_RESET);
             scanf("%s",player_name);
             show_game_instructions();
             score = play_game();
