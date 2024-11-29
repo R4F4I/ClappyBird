@@ -101,6 +101,7 @@ list scores_list[MAX_SCORES];
 
 // global variables
 entity bird;                                // handles bird's position
+entity AI_bird;                             // handles AI bird's position
 entity pipes[3];                            // handles the 3 pipe's position
 char screen[HEIGHT][WIDTH];                 // handles the game screen
 char player_name[3];                        // handles the player's name
@@ -145,8 +146,9 @@ void update_border() {
     }
 }
 
-void update_bird(){
+void update_birds(){
     screen[bird.y][bird.x] = '@';
+    screen[AI_bird.y][AI_bird.x] = '+';
 }
 
 void print_screen(){
@@ -158,7 +160,11 @@ void print_screen(){
             if (screen[y][x] == '@')
             {
                 printf("%s%c",YELHB,screen[y][x]);
-            } else if (screen[y][x] == '|' || screen[y][x] == '-') 
+            } else if (screen[y][x] == '+') 
+            {
+                printf("%s%c",BLKHB,screen[y][x]);
+            } 
+              else if (screen[y][x] == '|' || screen[y][x] == '-') 
             {
                 printf("%s%c", GREEN_BG,screen[y][x]);
             } 
@@ -226,7 +232,7 @@ void draw(){
 
     // draw border in rectangle
     update_border();
-    update_bird();
+    update_birds();
     update_pipes();
     //update_aperture();
     update_score();
@@ -367,12 +373,31 @@ void clear_screen(){
     system("cls");
 }
 
+// choose minimum of 3
+int min_num(int int_1,int int_2,int int_3){
+    if (int_1 < int_2 && int_1 < int_3)
+    {
+        return int_1;
+    }
+    else if (int_2 < int_3 && int_2 < int_1)
+    {
+        return int_2;
+    }
+    else if(int_3 < int_1 && int_3 < int_2)
+    {
+        return int_3;
+    }
+    
+}
+
 int play_game(){
     // printf("%s",HIDE_CURSOR); 
 
     bird.x = 4;
     bird.y = 4;
-    int i,j; 
+    AI_bird.x = 10;
+    AI_bird.y = 10;
+    int i,j,k; 
 
     srand(time(NULL));
     //   initialise pipes
@@ -400,12 +425,35 @@ int play_game(){
 
     while (!collision() && !pressed_Q()) // keep running if no collision and no quit
     {
+        // choose the closest pipe
+            // k gives the actual value of the closest pipes distance
+        k = min_num(pipes[0].x,pipes[1].x,pipes[2].x);
+        
+        // get the closest pipe's height
+        for (i = 0; i < NoOfPipes; i++)
+        {
+            if (pipes[i].x == k){
+                k = pipes[i].y;
+                break; // exit when closest pipe is found
+            }
+        }
+        
+
         draw();
-        //                                          V``only move up if the height is greater than one
+        // changed bird to play automatically
+
+            // if bird is below move up            V``only move up if the height is greater than one
+        if (AI_bird.y > k  && AI_bird.y<HEIGHT && AI_bird.y>1)
+        {
+            AI_bird.y -= 2; //  move bird up
+        }
+
+
         if (pressed_W()&& bird.y<HEIGHT && bird.y>1)
         {
             bird.y -= 2; //  move bird up
         }
+        
 
 
         for (i = 0; i < NoOfPipes; i++)
@@ -422,6 +470,7 @@ int play_game(){
             
         }
 
+        AI_bird.y++; //  move AI bird down by 1 unit, will happen regardless
         bird.y++; //  move bird down by 1 unit, will happen regardless
         Sleep(80); // millisecond delay
     }
