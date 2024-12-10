@@ -104,8 +104,26 @@ entity bird;                                // handles bird's position
 entity AI_bird;                             // handles AI bird's position
 entity pipes[3];                            // handles the 3 pipe's position
 char screen[HEIGHT][WIDTH];                 // handles the game screen
-char player_name[3];                        // handles the player's name
+char player_name[4];                        // handles the player's name
 time_t game_start;                          // handles the game start time
+
+
+// ? sys functions
+
+void clear_screen(){
+    system("cls");
+}
+
+// pauses the program until user presses the keyboard
+void pause(){
+    system("pause>nul");
+}
+
+// ?/ sys functions
+
+// get screen width
+
+
 
 void hide_cursor() {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -115,6 +133,36 @@ void hide_cursor() {
     SetConsoleCursorInfo(hConsole, &cursorInfo);
 }
 
+/* 
+https://stackoverflow.com/questions/26423537/how-to-position-the-input-text-cursor-in-c
+printf("\033[XA"); // Move up X lines;
+printf("\033[XB"); // Move down X lines;
+printf("\033[XC"); // Move right X column;
+printf("\033[XD"); // Move left X column;
+printf("\033[2J"); // Clear screen
+
+ */
+
+// ? cursor position manipulation functions
+
+// move cursor up
+void cursor_up(int X){
+    printf("\033[%dA",X); // Move up X lines;
+}
+// move cursor down
+void cursor_down(int X){
+    printf("\033[%dB",X); // Move down X lines;
+}
+// move cursor right
+void cursor_right(int X){
+    printf("\033[%dC",X); // Move right X lines;
+}
+// move cursor left
+void cursor_left(int X){
+    printf("\033[%dD",X); // Move left X lines;
+}
+
+// ? /cursor position manipulation functions
 
 // ?playing game functions
 
@@ -182,7 +230,7 @@ void print_screen(){
         printf("%s|",COLOR_RESET);
         printf("\n");
     }
-    printf("\33[18A"); // moves the cursor 18 lines up 2 more lines for the score
+    cursor_up(18);   // moves the cursor 18 lines up 2 more lines for the score
     
 }
 
@@ -319,19 +367,19 @@ int show_menu(){
             printf("%sQUIT                \n",COLOR_RESET);
             break;
         case 0:
-            printf("%sPLAY GAME  <%s\n",RED,COLOR_RESET);
+            printf("%sPLAY GAME  <%s\n",REDHB,COLOR_RESET);
             printf("SEE SCORES          %s\n",COLOR_RESET); // added whitespaces to clear artifacts after refresh
             printf("%sQUIT                \n",COLOR_RESET);
             break;
         case 1:
             printf("PLAY GAME           %s\n",COLOR_RESET); // added whitespaces to clear artifacts after refresh
-            printf("%sSEE SCORES <%s\n",RED,COLOR_RESET);
+            printf("%sSEE SCORES <%s\n",REDHB,COLOR_RESET);
             printf("%sQUIT                \n",COLOR_RESET);
             break;
         case 2:
             printf("PLAY GAME           %s\n",COLOR_RESET); // added whitespaces to clear artifacts after refresh
             printf("SEE SCORES          %s\n",COLOR_RESET);
-            printf("%sQUIT       <%s\n",RED,COLOR_RESET);
+            printf("%sQUIT       <%s\n",REDHB,COLOR_RESET);
             break;
         default:
             break;
@@ -368,10 +416,6 @@ int show_menu(){
 }
 
 // ? /show functions
-
-void clear_screen(){
-    system("cls");
-}
 
 // choose minimum of 3
 int min_num(int int_1,int int_2,int int_3){
@@ -415,10 +459,8 @@ int play_game(){
     draw();
     //printf("%s",COLOR_RESET);
 
-    while (!(pressed_W()) && !pressed_Q()) {
-        Sleep(80); // delay for 80 milliseconds
-        // Do nothing, just wait for the key press
-    }
+    // pause until an input is pressed
+    pause();
     
 
     game_start = time(NULL);
@@ -532,7 +574,7 @@ void show_scores(){
 
     printf("\nPress B to go back\n");
     while (!pressed_B()){
-        Sleep(100);
+        pause();
     }
 }
 
@@ -595,10 +637,15 @@ void main(){
         if (option == 0)
         {
             // initialise the game
-            clear_screen();
-            show_title();
-            printf("Enter your name (like %s'MSM'%s and NOT %s'masoom'%s) \nto start the game:",GREEN,COLOR_RESET,RED,COLOR_RESET);
-            scanf("%s",player_name);
+            while (strlen(player_name)!=3)
+            {
+                clear_screen();
+                show_title();
+                // cursor_up(2);
+                printf("Enter your name (like %s'MSM'%s and NOT %s'masoom'%s) \nto start the game:",GREEN,COLOR_RESET,RED,COLOR_RESET);
+                fgets(player_name,sizeof(player_name),stdin);
+            }
+            
             show_game_instructions();
             score = play_game();
             // run this subroutine regardless of the score, it will also check if the score is high enough to be stored in the scores_list structure
