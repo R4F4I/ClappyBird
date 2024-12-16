@@ -578,6 +578,53 @@ void show_scores(){
     }
 }
 
+// checks if file is empty
+int file_empty(){
+    FILE* fp = fopen(FILENAME, "r"); 
+  
+    // checking if the file exist or not 
+    if (fp == NULL) { 
+        printf("File Not Found!\n"); 
+        return -1; 
+    } 
+  
+    fseek(fp, 0L, SEEK_END); 
+  
+    // calculating the size of the file 
+    long int res = ftell(fp); 
+  
+    // closing the file 
+    fclose(fp); 
+    return (res<1) ? 1: 0;
+}
+
+void init_file(){
+    if(file_empty()){
+        FILE *fptr;
+        fptr = fopen(FILENAME, "w");
+        int i;
+
+        if (fptr == NULL){
+            printf("Could not open file %s\n", FILENAME);
+        }
+
+        fprintf(fptr,"AAA,100\nBBB,90\nCCC,80\nDDD,70\nEEE,60\nFFF,50\nGGG,40\nHHH,30\nIII,20\nJJJ,10\n");
+        fclose(fptr);  
+    }
+}
+/* 
+AAA,100\n
+BBB,90\n
+CCC,80\n
+DDD,70\n
+EEE,60\n
+FFF,50\n
+GGG,40\n
+HHH,30\n
+III,20\n
+JJJ,10\n
+ */
+
 // inserts the value of the score into the scores_list structure
 void insert_score(int score,char player_name[]){
     int i,j;
@@ -623,6 +670,10 @@ void main(){
     int score;
     int option=-1;
     hide_cursor();
+
+    // init file on new machine
+    init_file();
+
 
     // get scores from the file
     fetch_scores();
