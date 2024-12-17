@@ -10,17 +10,17 @@
 - [ClappyBird](#clappybird)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
-  - [Features🎯🎯🎯](#features)
-  - [Prerequisites💻💻💻](#prerequisites)
-  - [Files📂📂📂](#files)
-  - [Compilation Instructions🛠️🛠️🛠️](#compilation-instructions️️️)
-  - [Gameplay Instructions🎮🎮🎮](#gameplay-instructions)
-  - [Control Flow🎞️🎞️🎞️](#control-flow️️️)
+  - [Features](#features)
+  - [Prerequisites](#prerequisites)
+  - [Files](#files)
+  - [Compilation Instructions](#compilation-instructions)
+  - [Gameplay Instructions](#gameplay-instructions)
+  - [Control Flow](#control-flow)
   - [Code Highlights](#code-highlights)
     - [Constants](#constants)
     - [Core Structures](#core-structures)
     - [Key Functions](#key-functions)
-  - [Contributions🤝🤝🤝](#contributions)
+  - [Contributions](#contributions)
 
 
 ---
@@ -29,21 +29,21 @@
 
 This project implements a console-based Flappy Bird game using the Windows API and C standard libraries. Players control a bird to navigate through obstacles while trying to achieve the highest score possible. The game features AI competition, score tracking, and an interactive menu system.
 
-## Features🎯🎯🎯
+## Features
 - **Interactive Gameplay**: Players use the keyboard to control the bird.
 - **AI Competitor**: Compete against an AI-controlled bird.
 - **Score Saving**: Automatically saves and displays top scores.
 - **Customizable Settings**: Adjust game settings such as screen dimensions, pipe distance, and aperture size.
 
-## Prerequisites💻💻💻
+## Prerequisites
 - Windows operating system.
 - C compiler (e.g., GCC or MSVC).
 
-## Files📂📂📂
+## Files
 - `main.c`: Contains the game logic and implementation.
 - `scores_list.txt`: File to save and retrieve player scores.
 
-## Compilation Instructions🛠️🛠️🛠️
+## Compilation Instructions
 1. Ensure you have a C compiler installed.
 2. Open a terminal or command prompt.
 3. Navigate to the directory containing the `main.c` file.
@@ -56,7 +56,7 @@ This project implements a console-based Flappy Bird game using the Windows API a
    ./flappy_bird.exe
    ```
 
-## Gameplay Instructions🎮🎮🎮
+## Gameplay Instructions
 1. Launch the game by running the executable.
 2. Navigate the menu using the arrow keys and select an option with the `O` key.
 3. Use the following controls during gameplay:
@@ -65,7 +65,7 @@ This project implements a console-based Flappy Bird game using the Windows API a
 4. Avoid pipes and the ground to keep the bird alive.
 5. Try to survive as long as possible to achieve a high score.
 
-## Control Flow🎞️🎞️🎞️
+## Control Flow
 Below is the control flow of the game implemented in `main.c`:
 
 ![](highlight.png)
@@ -85,7 +85,7 @@ Below is the control flow of the game implemented in `main.c`:
 [//]: # (```)
 
 ## Code Highlights
-💡💡💡
+
 ### Constants
 - **Screen Dimensions**: `HEIGHT`, `WIDTH`
 - **Pipe Configurations**: `NoOfPipes`, `DIST`, `APERTURE`
@@ -102,7 +102,7 @@ Below is the control flow of the game implemented in `main.c`:
 - `collision()`: Detects collisions with pipes or the ground.
 - `fetch_scores()`, `write_to_file()`: Manage the score file.
 
-## Contributions🤝🤝🤝
+## Contributions
 - **Rafay Siddiqui** (24K-0009)
 - **Masoom Khan** (24K-0001)
 - **Dev Kumar** (24K-0028)
