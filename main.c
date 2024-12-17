@@ -1,4 +1,10 @@
 /*
+credits:
+
+Rafay Siddiqui -- 24K-0009
+Masoom Khan ----- 24K-0001
+Dev Kumar ------- 24K-0028
+
 Functionalities:
 - Main
     - fetch scores from scores file
