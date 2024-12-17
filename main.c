@@ -677,7 +677,7 @@ void main(){
     int option=-1;
     hide_cursor();
 
-    // init file on new machine
+    // init score file on new machine
     init_file();
 
 

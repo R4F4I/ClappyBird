@@ -7,112 +7,102 @@
 </div>
 
 ## Table of Contents
-1. [Overview](#overview)
-2. [Installation Instructions](#installation-instructions)
-3. [Gameplay Instructions](#gameplay-instructions)
-4. [Control Flow](#control-flow)
-5. [Program Features](#program-features)
-6. [Credits](#credits)
+- [ClappyBird](#clappybird)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features🎯🎯🎯](#features)
+  - [Prerequisites💻💻💻](#prerequisites)
+  - [Files📂📂📂](#files)
+  - [Compilation Instructions🛠️🛠️🛠️](#compilation-instructions️️️)
+  - [Gameplay Instructions🎮🎮🎮](#gameplay-instructions)
+  - [Control Flow🎞️🎞️🎞️](#control-flow️️️)
+  - [Code Highlights](#code-highlights)
+    - [Constants](#constants)
+    - [Core Structures](#core-structures)
+    - [Key Functions](#key-functions)
+  - [Contributions🤝🤝🤝](#contributions)
+
 
 ---
 
 ## Overview
 
-This is a simple, text-based version of the popular **Flappy Bird** game implemented in **C**. It simulates the movement of a bird inside a frame, where the player controls the bird's vertical movement and tries to avoid colliding with pipes that appear randomly. The game features scoring, and the player's score is saved in a text file to track the top 10 high scores. The game also supports viewing high scores and credits.
+This project implements a console-based Flappy Bird game using the Windows API and C standard libraries. Players control a bird to navigate through obstacles while trying to achieve the highest score possible. The game features AI competition, score tracking, and an interactive menu system.
 
----
+## Features🎯🎯🎯
+- **Interactive Gameplay**: Players use the keyboard to control the bird.
+- **AI Competitor**: Compete against an AI-controlled bird.
+- **Score Saving**: Automatically saves and displays top scores.
+- **Customizable Settings**: Adjust game settings such as screen dimensions, pipe distance, and aperture size.
 
-## Installation Instructions
+## Prerequisites💻💻💻
+- Windows operating system.
+- C compiler (e.g., GCC or MSVC).
 
-To run the game:
+## Files📂📂📂
+- `main.c`: Contains the game logic and implementation.
+- `scores_list.txt`: File to save and retrieve player scores.
 
-1. **Clone or download the repository**.
-2. **Compile** the `main.c` file using a C compiler:
+## Compilation Instructions🛠️🛠️🛠️
+1. Ensure you have a C compiler installed.
+2. Open a terminal or command prompt.
+3. Navigate to the directory containing the `main.c` file.
+4. Compile the program using the following command:
+   ```bash
+   gcc .\main.c -o flappy_bird.exe
    ```
-   gcc main.c -o flappy_bird_game.exe
-   ```
-3. **Run the game**:
-   ```
-   ./flappy_bird_game.exe
+5. Run the compiled program:
+   ```bash
+   ./flappy_bird.exe
    ```
 
-**Dependencies**: The program uses the Windows API for handling asynchronous key presses and hiding the cursor. This is specifically designed for Windows systems.
+## Gameplay Instructions🎮🎮🎮
+1. Launch the game by running the executable.
+2. Navigate the menu using the arrow keys and select an option with the `O` key.
+3. Use the following controls during gameplay:
+   - Press `W` to make the bird jump.
+   - Press `Q` to quit the game.
+4. Avoid pipes and the ground to keep the bird alive.
+5. Try to survive as long as possible to achieve a high score.
 
----
+## Control Flow🎞️🎞️🎞️
+Below is the control flow of the game implemented in `main.c`:
 
-## Gameplay Instructions
+![](highlight.png)
 
-1. **Start the Game**: Select "PLAY GAME" from the main menu.
-2. **Control the Bird**:
-   - **Press `W`** to make the bird fly up.
-   - **Press `Q`** to quit the game.
-   - The bird will start descending at a constant rate after flying up.
-3. **Goal**: Avoid the pipes and survive as long as possible.
-   - Pipes move towards the bird from right to left.
-   - If the bird collides with a pipe or hits the ground, the game ends.
-4. **Scoring**: Your score is based on how long you survive.
-5. **High Scores**: View the top 10 scores at any time from the main menu.
-6. **Exit**: You can exit the game from the main menu.
+[//]: # (```mermaid)
+[//]: # (graph TD)
+[//]: # (    A[Start Program] --> B[Initialize File and Scores])
+[//]: # (    B --> C[Display Menu])
+[//]: # (    C -->|Option: Play Game| D[Initialize Game Variables])
+[//]: # (    D --> E[Gameplay Loop])
+[//]: # (    E -->|Collision Detected| F[Save Score])
+[//]: # (    E -->|Quit Pressed| F)
+[//]: # (    F --> G[Display Scores])
+[//]: # (    G -->|Back to Menu| C)
+[//]: # (    C -->|Option: View Scores| G)
+[//]: # (    C -->|Option: Quit| H[Exit Program])
+[//]: # (```)
 
----
+## Code Highlights
+💡💡💡
+### Constants
+- **Screen Dimensions**: `HEIGHT`, `WIDTH`
+- **Pipe Configurations**: `NoOfPipes`, `DIST`, `APERTURE`
+- **File Configurations**: `FILENAME`
 
-## Control Flow
+### Core Structures
+- `entity`: Represents the bird and pipes with `x` and `y` coordinates.
+- `list`: Holds player names and scores.
 
-Below is a **diagram** illustrating the control flow of the game.
+### Key Functions
+- `clear_screen()`: Clears the console screen.
+- `update_border()`, `update_pipes()`, `update_birds()`: Update the visual elements on the screen.
+- `print_screen()`: Displays the current game state.
+- `collision()`: Detects collisions with pipes or the ground.
+- `fetch_scores()`, `write_to_file()`: Manage the score file.
 
-```mermaid
-graph TD
-    A[Start] --> B[Hide Cursor and Fetch Scores]
-    B --> C[Show Title]
-    C --> D[Show Main Menu]
-    D --> E[Get User Menu Option]
-    E -->|Play Game| F[Prompt for Player Name]
-    F --> G[Initialize Game]
-    G --> H[Play Game Loop]
-    H --> I[Check for Collision]
-    I -->|No Collision| H
-    I -->|Collision Detected| J[End Game]
-    J --> K[Insert Score into Leaderboard]
-    K --> L[Show High Scores]
-    L --> D
-    D -->|View Scores| M[Display Scores]
-    M --> D
-    D -->|Quit| N[Exit Program]
-    N --> O[Save Scores to File]
-    O --> P[Print Credits]
-    P --> Q[End]
-```
-
-### Main Menu
-The main menu allows the user to:
-- Play the game.
-- View high scores.
-- Quit the program.
-
-### Game Loop
-The game loop runs continuously while the player hasn't hit a pipe or the ground:
-- The bird can be controlled by pressing `W` to move up.
-- Pipes are randomly generated, and the screen updates each frame.
-- If a collision happens, the game ends and the score is recorded.
-
----
-
-## Program Features
-
-- **Game Loop**: The game continuously updates the bird's position and the movement of pipes.
-- **Collision Detection**: If the bird collides with a pipe or the ground, the game ends.
-- **Score Handling**: The player's score is calculated based on survival time, and the top 10 scores are stored.
-- **High Scores**: Players can view the high scores at any time.
-- **Menu Navigation**: The user can navigate the menu using the arrow keys and choose between playing the game, viewing scores, or quitting the program.
-
----
-
-## Credits
-
-- **Collaborators**: 
-   -  Rafay Siddiqui **(24K-0009)**
-   -  Masoom Khan    **(24K-0001)**
-   -  Dev Kumar      **(24K-0028)**
-
----
-
+## Contributions🤝🤝🤝
+- **Rafay Siddiqui** (24K-0009)
+- **Masoom Khan** (24K-0001)
+- **Dev Kumar** (24K-0028)
