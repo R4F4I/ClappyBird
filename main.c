@@ -64,7 +64,7 @@ Functionalities:
 # define DIST               25                  // distance between two pipes
 # define APERTURE           2                   // size of the aperture, if 0 the pipe has one character width '- -' if one '-   -' etc.
 # define MAX_SCORES         10                  // max amount of scores to be saved
-# define FILENAME           "scores_list.txt"   // file name to save the scores
+# define FILENAME           ".scores_list.txt"  // file name to save the scores
 
 # define COLOR_RESET        "\33[0m"            // ANSI code for COLOR_RESET output
 # define CYAN               "\033[36m"
