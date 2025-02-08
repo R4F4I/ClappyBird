@@ -1,4 +1,3 @@
-
 <div align="center">
 
 # ClappyBird
@@ -6,44 +5,44 @@
 ![alt text](image.png)
 </div>
 
-## Table of Contents
+##  1. <a name='TableofContents'></a>Table of Contents
 - [ClappyBird](#clappybird)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Features](#features)
-  - [Prerequisites](#prerequisites)
-  - [Files](#files)
-  - [Compilation Instructions](#compilation-instructions)
-  - [Gameplay Instructions](#gameplay-instructions)
-  - [Control Flow](#control-flow)
-  - [Code Highlights](#code-highlights)
-    - [Constants](#constants)
-    - [Core Structures](#core-structures)
-    - [Key Functions](#key-functions)
-  - [Contributions](#contributions)
-
+[1. Table of Contents](#1-table-of-contents)
+[2. about](#2-about)
+[3. Credits](#3-credits)
+[4. Overview](#4-overview)
+[5. Features](#5-features)
+[6. Files](#6-files)
+[7. Compilation Instructions](#7-compilation-instructions)
+[8. Control Flow](#8-control-flow)
+[9. Key Functions](#9-key-functions)
 
 ---
 
-## Overview
+##  2. <a name='about'></a>about
+ - simple c project made for uni
+
+##  3. <a name='Credits'></a>Credits
+
+- https://gist.github.com/smvd/aeaa7544f75988081285ab399c2579c7
+>  for code structure inspiration, also for using APIs
+
+
+##  4. <a name='Overview'></a>Overview
 
 This project implements a console-based Flappy Bird game using the Windows API and C standard libraries. Players control a bird to navigate through obstacles while trying to achieve the highest score possible. The game features AI competition, score tracking, and an interactive menu system.
 
-## Features
+##  5. <a name='Features'></a>Features
 - **Interactive Gameplay**: Players use the keyboard to control the bird.
-- **AI Competitor**: Compete against an AI-controlled bird.
+- **Bot**: Compete against another bird.
 - **Score Saving**: Automatically saves and displays top scores.
-- **Customizable Settings**: Adjust game settings such as screen dimensions, pipe distance, and aperture size.
 
-## Prerequisites
-- Windows operating system.
-- C compiler (e.g., GCC or MSVC).
 
-## Files
+##  6. <a name='Files'></a>Files
 - `main.c`: Contains the game logic and implementation.
 - `scores_list.txt`: File to save and retrieve player scores.
 
-## Compilation Instructions
+##  7. <a name='CompilationInstructions'></a>Compilation Instructions
 1. Ensure you have a C compiler installed.
 2. Open a terminal or command prompt.
 3. Navigate to the directory containing the `main.c` file.
@@ -56,53 +55,30 @@ This project implements a console-based Flappy Bird game using the Windows API a
    ./flappy_bird.exe
    ```
 
-## Gameplay Instructions
-1. Launch the game by running the executable.
-2. Navigate the menu using the arrow keys and select an option with the `O` key.
-3. Use the following controls during gameplay:
-   - Press `W` to make the bird jump.
-   - Press `Q` to quit the game.
-4. Avoid pipes and the ground to keep the bird alive.
-5. Try to survive as long as possible to achieve a high score.
 
-## Control Flow
+##  8. <a name='ControlFlow'></a>Control Flow
 Below is the control flow of the game implemented in `main.c`:
 
-![](highlight.png)
+<!--- ![](highlight.png) --->
 
-[//]: # (```mermaid)
-[//]: # (graph TD)
-[//]: # (    A[Start Program] --> B[Initialize File and Scores])
-[//]: # (    B --> C[Display Menu])
-[//]: # (    C -->|Option: Play Game| D[Initialize Game Variables])
-[//]: # (    D --> E[Gameplay Loop])
-[//]: # (    E -->|Collision Detected| F[Save Score])
-[//]: # (    E -->|Quit Pressed| F)
-[//]: # (    F --> G[Display Scores])
-[//]: # (    G -->|Back to Menu| C)
-[//]: # (    C -->|Option: View Scores| G)
-[//]: # (    C -->|Option: Quit| H[Exit Program])
-[//]: # (```)
+```mermaid
+graph TD
+    A[Start Program] --> B[Initialize File and Scores]
+    B --> C[Display Menu]
+    C -->|Option: Play Game| D[Initialize Game Variables]
+    D --> E[Gameplay Loop]
+    E -->|Collision Detected| F[Save Score]
+    E -->|Quit Pressed| F
+    F --> G[Display Scores]
+    G -->|Back to Menu| C
+    C -->|Option: View Scores| G
+    C -->|Option: Quit| H[Exit Program]
+```
 
-## Code Highlights
 
-### Constants
-- **Screen Dimensions**: `HEIGHT`, `WIDTH`
-- **Pipe Configurations**: `NoOfPipes`, `DIST`, `APERTURE`
-- **File Configurations**: `FILENAME`
-
-### Core Structures
-- `entity`: Represents the bird and pipes with `x` and `y` coordinates.
-- `list`: Holds player names and scores.
-
-### Key Functions
+##  9. <a name='KeyFunctions'></a>Key Functions
 - `clear_screen()`: Clears the console screen.
 - `update_border()`, `update_pipes()`, `update_birds()`: Update the visual elements on the screen.
 - `print_screen()`: Displays the current game state.
 - `collision()`: Detects collisions with pipes or the ground.
 - `fetch_scores()`, `write_to_file()`: Manage the score file.
-
-## Contributions
-- **Rafay Siddiqui** (24K-0009)
-- **Masoom Khan** (24K-0001)
-- **Dev Kumar** (24K-0028)
